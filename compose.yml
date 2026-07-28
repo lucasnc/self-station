@@ -1,0 +1,33 @@
+name: self-station
+
+services:
+  self-station:
+    container_name: self-station
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      SELF_STATION_DB: /data/self_station.db
+      SELF_STATION_FORCE_IPV4: "1"
+      SELF_STATION_HOST: 0.0.0.0
+      SELF_STATION_BROWSER_URL: https://all.api.radio-browser.info
+      SELF_STATION_LIVE_SEARCH_LIMIT: "24"
+      SELF_STATION_NODE_PATH: /usr/local/bin/node
+      SELF_STATION_PLAYLIST_IMPORT_LIMIT: "100"
+      SELF_STATION_PORT: "8090"
+      SELF_STATION_RELAY_BITRATE: "128"
+      SELF_STATION_SEARCH_LIMIT: "12"
+      SELF_STATION_STREAM_RESOLVE_WAIT_SECONDS: "30"
+    volumes:
+      - /srv/data/self-station:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 15s

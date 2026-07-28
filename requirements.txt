@@ -1,0 +1,2 @@
+# The default extra includes yt-dlp-ejs; curl-cffi improves network compatibility.
+yt-dlp[default,curl-cffi]

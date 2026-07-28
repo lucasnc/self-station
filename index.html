@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Self Station</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap");
+
+    :root {
+      color-scheme: dark;
+      --bg: #000;
+      --panel: rgba(4, 4, 4, .94);
+      --panel-2: #0a0a0a;
+      --line: #2c2c2c;
+      --text: #fff;
+      --muted: #aaa;
+      --accent: #fff;
+      --danger: #f0a0a0;
+      --radius: 0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 Ubuntu, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+    button { touch-action: manipulation; }
+
+    .page-backdrop {
+      position: fixed;
+      inset: -36px;
+      z-index: 0;
+      background-position: center;
+      background-size: cover;
+      filter: blur(26px) saturate(.72) contrast(1.08);
+      opacity: .32;
+      transform: scale(1.08);
+      transition: background-image .5s ease, opacity .5s ease;
+      pointer-events: none;
+    }
+
+    .page-shade {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .5), rgba(0, 0, 0, .74));
+      pointer-events: none;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark { width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px #1d1d1d; }
+    h1 { margin: 0; font-size: 17px; letter-spacing: .04em; font-weight: 650; }
+    .subtle, .meta { color: var(--muted); font-size: 13px; }
+
+    .device-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 0;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin: -6px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-button {
+      min-height: 42px;
+      padding: 8px 15px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .tab-button:hover { color: var(--text); }
+    .tab-button.active { color: var(--text); border-bottom-color: var(--text); }
+    .view[hidden] { display: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack { display: grid; gap: 18px; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h2 { margin: 0; font-size: 14px; font-weight: 650; }
+
+    .now {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .now-artwork {
+      width: 120px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: visible;
+    }
+
+    .cover-disc {
+      width: 56.25%;
+      aspect-ratio: 1;
+      display: block;
+      object-fit: cover;
+      border: 1px solid #343434;
+      border-radius: 50%;
+      background: var(--panel-2);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .46), inset 0 0 0 1px rgba(255, 255, 255, .08);
+      animation: now-disc-spin 12s linear infinite;
+      animation-play-state: paused;
+      will-change: transform;
+    }
+
+    .now-artwork.is-playing .cover-disc { animation-play-state: running !important; }
+
+    .now-artwork::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 56.25%;
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle, #050505 0 6%, #888 6.5% 7.5%, #111 8% 10%, transparent 10.5%),
+        repeating-radial-gradient(circle, transparent 0 8px, rgba(255, 255, 255, .055) 8.5px, transparent 9.5px);
+      box-shadow: inset 0 0 14px rgba(255, 255, 255, .06);
+    }
+
+    @keyframes now-disc-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .track-title {
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 650;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .progress {
+      height: 5px;
+      margin: 16px 0 7px;
+      overflow: hidden;
+      border-radius: 0;
+      background: #252525;
+    }
+
+    .progress > span { display: block; width: 0; height: 100%; background: var(--accent); transition: width .5s linear; }
+    .progress-time { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+    .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: #080808;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover { border-color: #666; background: #121212; }
+    .btn:disabled { opacity: .45; cursor: default; }
+    .btn.primary { color: #000; background: var(--accent); border-color: var(--accent); font-weight: 650; }
+    .btn.primary:hover { background: #ddd; }
+    .btn.compact { min-height: 34px; padding: 6px 10px; font-size: 13px; }
+    .btn.icon { width: 42px; min-width: 42px; padding: 0; }
+    .btn.compact.icon { width: 34px; min-width: 34px; padding: 0; }
+    .btn svg, .device-button svg { width: 18px; height: 18px; fill: currentColor; flex: 0 0 auto; }
+
+    .volume { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-size: 13px; }
+    input[type="range"] { width: 100px; accent-color: #d7dadf; }
+
+    .search-form { display: flex; gap: 9px; }
+    .search-input, .name-input {
+      width: 100%;
+      min-height: 43px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: #050505;
+      color: var(--text);
+      outline: none;
+      padding: 9px 12px;
+    }
+    .search-input:focus, .name-input:focus { border-color: #777; }
+
+    .playlist-preview {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+    .playlist-preview[hidden] { display: none; }
+    .playlist-summary {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+    .playlist-cover {
+      width: 86px;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background: #050505;
+      border: 1px solid var(--line);
+    }
+    .playlist-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .playlist-limit {
+      min-height: 40px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      color: var(--text);
+      background: #050505;
+      outline: none;
+    }
+    .playlist-import-button { gap: 8px; }
+    .playlist-track-list { display: grid; border-top: 1px solid var(--line); }
+    .playlist-track {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1d1d1d;
+    }
+    .playlist-track:last-child { border-bottom: 0; }
+
+    .results, .queue { display: grid; gap: 8px; }
+    .results { margin-top: 14px; }
+
+    .result, .queue-item {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 0;
+      background: var(--panel-2);
+      border: 1px solid transparent;
+    }
+
+    .result img { width: 74px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; background: #101214; }
+    .radio-results .result img { aspect-ratio: 1; object-fit: contain; padding: 5px; }
+    .radio-view { width: min(820px, 100%); }
+    .radio-intro { margin: -4px 0 14px; color: var(--muted); font-size: 13px; }
+    .radio-live-label { color: #d7d7d7; letter-spacing: .04em; }
+    .item-title { margin: 0 0 3px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+    .item-meta { color: var(--muted); font-size: 12px; }
+    .queue-index { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .queue-item { grid-template-columns: 28px minmax(0, 1fr) auto; }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .radio-copy { min-width: 0; }
+    .radio-copy strong { display: block; font-size: 13px; font-weight: 600; }
+    .radio-copy small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .ranking { display: grid; gap: 8px; }
+    .rank-item {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 9px;
+      border-radius: 0;
+      background: var(--panel-2);
+      border: 1px solid transparent;
+    }
+    .rank-cover { width: 52px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; background: #050505; }
+
+    .empty {
+      padding: 26px 12px;
+      color: var(--muted);
+      text-align: center;
+      border: 0;
+    }
+
+    .sync-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 18px;
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #697078; }
+    .sync-dot.ok { background: #aab5aa; }
+    .sync-dot.warn { background: #c4aa80; }
+    .error { color: var(--danger); }
+
+    .audio-gate {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 10;
+      display: none;
+      max-width: calc(100% - 36px);
+      box-shadow: 0 12px 35px #0008;
+      gap: 8px;
+    }
+    .audio-gate.visible { display: block; }
+
+    dialog {
+      width: min(420px, calc(100% - 28px));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0;
+      color: var(--text);
+      background: var(--panel);
+    }
+    dialog::backdrop { background: #050607c7; }
+    .dialog-body { padding: 20px; }
+    .dialog-body h2 { font-size: 18px; margin-bottom: 7px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    #player { position: fixed; width: 1px; height: 1px; opacity: .001; pointer-events: none; }
+
+    @media (max-width: 820px) {
+      .shell { width: min(100% - 20px, 680px); padding-top: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .queue-panel { order: 2; }
+    }
+
+    @media (max-width: 560px) {
+      header { align-items: flex-start; }
+      .panel { padding: 14px; }
+      .now { grid-template-columns: 88px minmax(0, 1fr); gap: 13px; }
+      .now-artwork { width: 88px; }
+      .track-title { font-size: 17px; }
+      .volume { width: 100%; margin-left: 0; }
+      .volume input { flex: 1; }
+      .search-form { display: grid; grid-template-columns: 1fr auto; }
+      .result { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 9px; }
+      .result img { width: 58px; }
+      .result .btn { padding-inline: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cover-disc { animation-duration: 30s; }
+    }
+  </style>
+</head>
+<body>
+  <div id="pageBackdrop" class="page-backdrop" aria-hidden="true"></div>
+  <div class="page-shade" aria-hidden="true"></div>
+  <audio id="player" preload="metadata" playsinline></audio>
+
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <span class="mark"></span>
+        <div>
+          <h1>Self Station</h1>
+          <div class="subtle" id="connectionText">connecting to server</div>
+        </div>
+      </div>
+      <button class="device-button" id="deviceButton" type="button" title="Change device name">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v1ZM8 17H6v-2h2v2Zm9.7-8.3-2.4 2.4-2.4-2.4 2.4-2.4L17.7 8.7ZM21.4 5 19 7.4 16.6 5 19 2.6 21.4 5Z"/></svg>
+        <span id="deviceLabel">Device</span>
+      </button>
+    </header>
+
+    <nav class="tabs" aria-label="Jukebox sections">
+      <button class="tab-button active" type="button" data-view="jukebox" aria-selected="true">Jukebox</button>
+      <button class="tab-button" type="button" data-view="radios" aria-selected="false">Radio</button>
+    </nav>
+
+    <main id="jukeboxView" class="grid view">
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Now playing</h2>
+            <span class="meta" id="playbackState">stopped</span>
+          </div>
+          <div id="nowEmpty" class="empty">The queue is empty.</div>
+          <div id="nowContent" hidden>
+            <div class="now">
+              <div id="nowDisc" class="now-artwork" aria-hidden="true">
+                <img id="nowCover" class="cover-disc" alt="">
+              </div>
+              <div>
+                <h3 id="nowTitle" class="track-title"></h3>
+                <div id="nowUploader" class="meta"></div>
+                <div id="nowAdded" class="meta"></div>
+              </div>
+            </div>
+            <div class="progress"><span id="progressBar"></span></div>
+            <div class="progress-time"><span id="currentTime">0:00</span><span id="totalTime">0:00</span></div>
+            <div class="controls">
+              <button class="btn primary icon" id="playPauseButton" type="button" aria-label="Pause" title="Pause">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5Zm8 0h4v14h-4V5Z"/></svg>
+              </button>
+              <button class="btn icon" id="skipButton" type="button" aria-label="Skip" title="Skip">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7L5 5Zm11 0h3v14h-3V5Z"/></svg>
+              </button>
+              <div class="volume">
+                <span>Local volume</span>
+                <input id="volume" type="range" min="0" max="100" value="80" aria-label="Local volume">
+              </div>
+            </div>
+            <div class="sync-line"><span id="syncDot" class="sync-dot"></span><span id="syncText">waiting for audio</span></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Search or import</h2>
+          </div>
+          <form id="searchForm" class="search-form">
+            <input id="searchInput" class="search-input" type="search" minlength="2" maxlength="2048" placeholder="Song, artist, video, or playlist URL" autocomplete="off" required>
+            <button id="searchButton" class="btn primary icon" type="submit" aria-label="Search" title="Search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.7 19.3-4.2-4.2a7 7 0 1 0-1.4 1.4l4.2 4.2 1.4-1.4ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
+            </button>
+          </form>
+          <div id="searchStatus" class="sync-line"></div>
+          <div id="playlistPreview" class="playlist-preview" hidden></div>
+          <div id="results" class="results"></div>
+        </section>
+      </div>
+
+      <div class="stack queue-panel">
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Queue</h2>
+            <span id="queueCount" class="meta">0 tracks</span>
+          </div>
+          <div id="queue" class="queue"><div class="empty">No tracks waiting.</div></div>
+          <div class="radio-option">
+            <div class="radio-copy">
+              <strong>Auto radio</strong>
+              <small id="autoRadioState">Off</small>
+            </div>
+            <button id="autoRadioToggle" class="btn icon" type="button" aria-label="Enable auto radio" aria-pressed="false" title="Enable auto radio">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v12H4V6Zm4 3h2v6H8V9Zm4-5h2v16h-2V4Zm4 3h2v10h-2V7Zm4 3h2v4h-2v-4Z"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Recent</h2>
+          </div>
+          <div id="recentTracks" class="ranking"><div class="empty">No recent playback.</div></div>
+        </section>
+      </div>
+    </main>
+
+    <main id="radioView" class="radio-view view" hidden>
+      <section class="panel">
+        <div class="panel-title">
+          <h2>Search live radio</h2>
+          <span class="meta">self-hosted relay</span>
+        </div>
+        <p class="radio-intro">Search for a station by name. When added, Self Station receives the stream once and relays it to connected browsers.</p>
+        <form id="radioSearchForm" class="search-form">
+          <input id="radioSearchInput" class="search-input" type="search" minlength="2" maxlength="100" placeholder="Radio station name" autocomplete="off" required>
+          <button id="radioSearchButton" class="btn primary icon" type="submit" aria-label="Search radio stations" title="Search radio stations">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.7 19.3-4.2-4.2a7 7 0 1 0-1.4 1.4l4.2 4.2 1.4-1.4ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
+          </button>
+        </form>
+        <div id="radioSearchStatus" class="sync-line">Enter at least two characters.</div>
+        <div id="radioResults" class="results radio-results"></div>
+      </section>
+    </main>
+  </div>
+
+  <button id="audioGate" class="btn primary audio-gate" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-9v2.1a7 7 0 0 1 0 13.8V21a9 9 0 0 0 0-18Z"/></svg>
+    Enable audio in this browser
+  </button>
+
+  <dialog id="deviceDialog">
+    <form id="deviceForm" class="dialog-body" method="dialog">
+      <h2>This device name</h2>
+      <p class="meta">This name will be shown on tracks added by this browser.</p>
+      <input id="deviceInput" class="name-input" maxlength="40" required>
+      <div class="dialog-actions">
+        <button id="cancelDevice" class="btn icon" type="button" aria-label="Cancel" title="Cancel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4 6.4 5Z"/></svg>
+        </button>
+        <button class="btn primary icon" value="save" type="submit" aria-label="Save" title="Save">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.2 16.2-4.4-4.4-1.4 1.4L9.2 19 21 7.2l-1.4-1.4-10.4 10.4Z"/></svg>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const player = $("#player");
+    const audioGate = $("#audioGate");
+    const deviceDialog = $("#deviceDialog");
+    const RADIO_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23090909'/%3E%3Cpath d='M25 42h70v48H25zM34 51v30h52V51zm7 7h38v4H41zm0 10h25v4H41zM60 23l6 5-21 14-4-6z' fill='%23888888'/%3E%3C/svg%3E";
+    const ICONS = {
+      play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l12-8L7 4Z"/></svg>',
+      pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5Zm8 0h4v14h-4V5Z"/></svg>',
+      add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/></svg>',
+      check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.2 16.2-4.4-4.4-1.4 1.4L9.2 19 21 7.2l-1.4-1.4-10.4 10.4Z"/></svg>',
+      playlist: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v2H4V5Zm0 6h11v2H4v-2Zm0 6h7v2H4v-2Zm14-3v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3Z"/></svg>',
+      remove: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4V2h8v2h5v2H3V4h5Zm-2 4h12l-1 14H7L6 8Zm3 2 .6 10h1.5l-.4-10H9Zm4.3 0-.4 10h1.5l.6-10h-1.7Z"/></svg>',
+      retry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.7 9H3.2A9 9 0 1 0 5 6.7V3H3v7h7V8H6.5A7 7 0 0 1 12 5Z"/></svg>'
+    };
+    const clientId = localStorage.getItem("selfStationClientId") || localStorage.getItem("jukeboxClientId") ||
+      (crypto.randomUUID ? crypto.randomUUID() : `client-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    localStorage.setItem("selfStationClientId", clientId);
+
+    let deviceName = localStorage.getItem("selfStationDeviceName") || localStorage.getItem("jukeboxDeviceName") || "";
+    let serverOffsetMs = 0;
+    let offsetReady = false;
+    let lastState = null;
+    let currentQueueId = null;
+    let currentRevision = null;
+    let audioEnabled = (localStorage.getItem("selfStationAudioEnabled") || localStorage.getItem("jukeboxAudioEnabled")) === "1";
+    let syncTimer = null;
+    let stateTimer = null;
+    let stateRequestRunning = false;
+    let streamRetries = 0;
+    let streamRetryTimer = null;
+    let playlistPreviewData = null;
+    let playlistPollTimer = null;
+
+    function suggestedDeviceName() {
+      const ua = navigator.userAgent;
+      let kind = "Browser";
+      if (/Android/i.test(ua)) kind = "Android";
+      else if (/iPhone|iPad/i.test(ua)) kind = "iPhone";
+      else if (/Windows/i.test(ua)) kind = "Windows";
+      else if (/Macintosh/i.test(ua)) kind = "Mac";
+      return `${kind}-${clientId.slice(0, 4).toUpperCase()}`;
+    }
+
+    function openDeviceDialog(firstUse = false) {
+      $("#deviceInput").value = deviceName || suggestedDeviceName();
+      $("#cancelDevice").hidden = firstUse;
+      deviceDialog.showModal();
+      setTimeout(() => $("#deviceInput").select(), 50);
+    }
+
+    function updateDeviceLabel() {
+      $("#deviceLabel").textContent = deviceName || "Set device";
+    }
+
+    function selectView(view) {
+      const selected = view === "radios" ? "radios" : "jukebox";
+      $("#jukeboxView").hidden = selected !== "jukebox";
+      $("#radioView").hidden = selected !== "radios";
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        const active = button.dataset.view === selected;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+      localStorage.setItem("selfStationView", selected);
+      history.replaceState(null, "", selected === "radios" ? "#radios" : location.pathname + location.search);
+      if (selected === "radios") setTimeout(() => $("#radioSearchInput").focus(), 0);
+    }
+
+    document.querySelectorAll(".tab-button").forEach((button) => {
+      button.addEventListener("click", () => selectView(button.dataset.view));
+    });
+
+    $("#deviceButton").addEventListener("click", () => openDeviceDialog(false));
+    $("#cancelDevice").addEventListener("click", () => deviceDialog.close());
+    $("#deviceForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = $("#deviceInput").value.trim().replace(/\s+/g, " ").slice(0, 40);
+      if (!name) return;
+      deviceName = name;
+      localStorage.setItem("selfStationDeviceName", deviceName);
+      updateDeviceLabel();
+      deviceDialog.close();
+      fetchState();
+    });
+
+    function formatDuration(totalSeconds) {
+      if (!Number.isFinite(Number(totalSeconds)) || Number(totalSeconds) <= 0) return "--:--";
+      const seconds = Math.floor(Number(totalSeconds));
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return h ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : `${m}:${String(s).padStart(2, "0")}`;
+    }
+
+    function formatViews(value) {
+      if (value === null || value === undefined) return "plays unavailable";
+      return `${new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(value)} plays`;
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "";
+      return new Date(timestamp * 1000).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>'"]/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+      })[char]);
+    }
+
+    function isLiveRadio(item) {
+      return Boolean(item && item.media_type === "radio");
+    }
+
+    function artworkUrl(item, quality = "mqdefault") {
+      if (!item) return RADIO_PLACEHOLDER;
+      if (isLiveRadio(item)) return item.thumbnail || RADIO_PLACEHOLDER;
+      return `https://i.ytimg.com/vi/${encodeURIComponent(item.video_id)}/${quality}.jpg`;
+    }
+
+    function mediaSummary(item) {
+      if (isLiveRadio(item)) {
+        return [
+          item.uploader,
+          "LIVE",
+          item.codec,
+          item.bitrate ? `${item.bitrate} kbps` : "",
+        ].filter(Boolean).join(" - ");
+      }
+      return [item.uploader || "YouTube", formatDuration(item.duration), formatViews(item.view_count)].filter(Boolean).join(" - ");
+    }
+
+    function streamUrl(item, state = lastState) {
+      if (isLiveRadio(item)) {
+        return `/relay/radio/${encodeURIComponent(item.id)}?revision=${encodeURIComponent(state && state.revision || 0)}&retry=${Date.now()}`;
+      }
+      return `/stream/${encodeURIComponent(item.video_id)}?queue_id=${item.id}&retry=${Date.now()}`;
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+      return data;
+    }
+
+    function targetPosition(state = lastState) {
+      if (!state || !state.current) return 0;
+      if (isLiveRadio(state.current)) return 0;
+      let position = Number(state.position || 0);
+      if (state.status === "playing") {
+        const estimatedServerNow = (Date.now() + serverOffsetMs) / 1000;
+        position += Math.max(0, estimatedServerNow - Number(state.server_time || estimatedServerNow));
+      }
+      if (state.current.duration > 0) position = Math.min(position, state.current.duration);
+      return Math.max(0, position);
+    }
+
+    async function fetchState() {
+      if (stateRequestRunning || !deviceName) return;
+      stateRequestRunning = true;
+      const started = Date.now();
+      try {
+        const params = new URLSearchParams({ client_id: clientId, device_name: deviceName });
+        const state = await api(`/api/state?${params}`);
+        const finished = Date.now();
+        const sample = state.server_time * 1000 - ((started + finished) / 2);
+        serverOffsetMs = offsetReady ? serverOffsetMs * .8 + sample * .2 : sample;
+        offsetReady = true;
+        lastState = state;
+        renderState(state);
+        syncAudio();
+        const names = state.clients.map((client) => client.name);
+        $("#connectionText").textContent = `${names.length} connected${names.length === 1 ? "" : "s"} - ${names.join(", ")}`;
+      } catch (error) {
+        $("#connectionText").textContent = "server unavailable";
+        $("#connectionText").classList.add("error");
+      } finally {
+        stateRequestRunning = false;
+      }
+    }
+
+    function renderState(state) {
+      const current = state.current;
+      $("#pageBackdrop").style.backgroundImage = current
+        ? `url(${JSON.stringify(artworkUrl(current, "hqdefault"))})`
+        : "none";
+      $("#playbackState").textContent = state.status === "playing" ? "playing" : state.status === "paused" ? "paused" : "stopped";
+      $("#nowEmpty").hidden = Boolean(current);
+      $("#nowContent").hidden = !current;
+      $("#playPauseButton").disabled = !current;
+      $("#skipButton").disabled = !current;
+      $("#nowDisc").classList.toggle("is-playing", Boolean(current) && state.status === "playing");
+      if (current) {
+        $("#nowCover").src = artworkUrl(current);
+        $("#nowCover").onerror = () => { $("#nowCover").src = RADIO_PLACEHOLDER; };
+        $("#nowTitle").textContent = current.title;
+        $("#nowUploader").textContent = mediaSummary(current);
+        $("#nowAdded").textContent = `Added by ${current.added_by} at ${formatDate(current.added_at)} - ${current.local_plays}x on Self Station`;
+        const isPlaying = state.status === "playing";
+        $("#playPauseButton").innerHTML = isPlaying ? ICONS.pause : ICONS.play;
+        $("#playPauseButton").setAttribute("aria-label", isPlaying ? "Pause" : "Play");
+        $("#playPauseButton").title = isPlaying ? "Pause" : "Play";
+      }
+
+      const items = state.queue || [];
+      $("#queueCount").textContent = `${items.length} ite${items.length === 1 ? "m" : "ns"}`;
+      $("#queue").innerHTML = items.length ? items.map((item, index) => `
+        <article class="queue-item">
+          <div class="queue-index">${String(index + 1).padStart(2, "0")}</div>
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
+            <div class="item-meta">${escapeHtml(item.added_by)} - ${formatDate(item.added_at)} - ${item.local_plays}x on Self Station</div>
+          </div>
+          <button class="btn compact icon remove-queue" type="button" data-queue-id="${Number(item.id)}" aria-label="Remove from queue" title="Remove from queue">${ICONS.remove}</button>
+        </article>
+      `).join("") : '<div class="empty">No items waiting.</div>';
+
+      const autoRadioEnabled = Boolean(state.auto_radio);
+      const autoRadioToggle = $("#autoRadioToggle");
+      autoRadioToggle.classList.toggle("primary", autoRadioEnabled);
+      autoRadioToggle.setAttribute("aria-pressed", String(autoRadioEnabled));
+      autoRadioToggle.setAttribute("aria-label", `${autoRadioEnabled ? "Disable" : "Enable"} Auto radio`);
+      autoRadioToggle.title = `${autoRadioEnabled ? "Disable" : "Enable"} Auto radio`;
+      if (!autoRadioEnabled) {
+        $("#autoRadioState").textContent = "Off";
+      } else if (state.radio && state.radio.searching) {
+        $("#autoRadioState").textContent = "Searching for a related track...";
+      } else if (!current && !(state.recent_tracks || []).length) {
+        $("#autoRadioState").textContent = "On - waiting for a reference track";
+      } else if (state.radio && state.radio.last_error) {
+        $("#autoRadioState").textContent = "On - retrying shortly";
+      } else {
+        $("#autoRadioState").textContent = "On - continues when the queue ends";
+      }
+
+      const recentTracks = state.recent_tracks || [];
+      $("#recentTracks").innerHTML = recentTracks.length ? recentTracks.map((item) => `
+        <article class="rank-item">
+          <img class="rank-cover" src="${escapeHtml(artworkUrl(item))}" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
+            <div class="item-meta">${formatDate(item.started_at)} - ${escapeHtml(item.added_by)}</div>
+          </div>
+        </article>
+      `).join("") : '<div class="empty">No recent playback.</div>';
+      document.querySelectorAll(".rank-cover").forEach((image) => {
+        image.addEventListener("error", () => { image.src = RADIO_PLACEHOLDER; }, { once: true });
+      });
+      updateProgress();
+    }
+
+    $("#queue").addEventListener("click", async (event) => {
+      const button = event.target.closest(".remove-queue");
+      if (!button) return;
+      button.disabled = true;
+      try {
+        await api("/api/queue/remove", {
+          method: "POST",
+          body: JSON.stringify({ queue_id: Number(button.dataset.queueId) }),
+        });
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.innerHTML = ICONS.retry;
+        button.title = error.message;
+        button.setAttribute("aria-label", error.message);
+      }
+    });
+
+    function updateProgress() {
+      if (!lastState || !lastState.current) return;
+      if (isLiveRadio(lastState.current)) {
+        $("#currentTime").textContent = "LIVE";
+        $("#totalTime").textContent = "";
+        $("#progressBar").style.width = lastState.status === "playing" ? "100%" : "0%";
+        return;
+      }
+      const position = targetPosition();
+      const duration = Number(lastState.current.duration || 0);
+      $("#currentTime").textContent = formatDuration(position);
+      $("#totalTime").textContent = formatDuration(duration);
+      $("#progressBar").style.width = duration > 0 ? `${Math.min(100, position / duration * 100)}%` : "0%";
+    }
+
+    async function syncAudio() {
+      const state = lastState;
+      const current = state && state.current;
+      if (!current) {
+        player.pause();
+        if (player.hasAttribute("src")) {
+          player.removeAttribute("src");
+          player.load();
+        }
+        player.playbackRate = 1;
+        currentQueueId = null;
+        currentRevision = null;
+        streamRetries = 0;
+        clearTimeout(streamRetryTimer);
+        streamRetryTimer = null;
+        audioGate.classList.remove("visible");
+        return;
+      }
+
+      const liveRadio = isLiveRadio(current);
+      const revision = Number(state.revision || 0);
+      const sourceChanged = currentQueueId !== current.id;
+      const liveRevisionChanged = liveRadio && currentRevision !== revision;
+
+      if (liveRadio && state.status === "paused") {
+        currentQueueId = current.id;
+        currentRevision = revision;
+        player.pause();
+        if (player.hasAttribute("src")) {
+          player.removeAttribute("src");
+          player.load();
+        }
+        player.playbackRate = 1;
+        setSyncStatus("radio paused - relay stopped", "ok");
+        return;
+      }
+
+      if (sourceChanged || liveRevisionChanged) {
+        currentQueueId = current.id;
+        currentRevision = revision;
+        streamRetries = 0;
+        clearTimeout(streamRetryTimer);
+        streamRetryTimer = null;
+        player.src = streamUrl(current, state);
+        player.load();
+        setSyncStatus(liveRadio ? "connecting to radio relay" : "loading audio", "warn");
+        audioGate.classList.toggle("visible", !audioEnabled);
+        return;
+      }
+
+      if (state.status === "paused") {
+        const target = targetPosition(state);
+        const drift = target - player.currentTime;
+        player.pause();
+        player.playbackRate = 1;
+        if (Math.abs(drift) > .3) player.currentTime = target;
+        setSyncStatus("paused and synchronized", "ok");
+        return;
+      }
+
+      if (!audioEnabled) {
+        audioGate.classList.add("visible");
+        setSyncStatus("enable audio in this browser", "warn");
+        return;
+      }
+
+      if (liveRadio) {
+        player.playbackRate = 1;
+        if (player.paused && player.readyState >= 2) {
+          try {
+            await player.play();
+            audioGate.classList.remove("visible");
+          } catch {
+            audioEnabled = false;
+            localStorage.setItem("selfStationAudioEnabled", "0");
+            audioGate.classList.add("visible");
+          }
+        }
+        setSyncStatus("live - local relay by Self Station", "ok");
+        return;
+      }
+
+      if (player.readyState < 1) return;
+      const target = targetPosition(state);
+      const drift = target - player.currentTime;
+
+      if (Math.abs(drift) > 1.15) {
+        player.currentTime = target;
+        player.playbackRate = 1;
+      } else if (Math.abs(drift) > .28) {
+        player.playbackRate = drift > 0 ? 1.035 : .965;
+      } else {
+        player.playbackRate = 1;
+      }
+
+      if (player.paused && player.readyState >= 2) {
+        try {
+          await player.play();
+          audioGate.classList.remove("visible");
+        } catch {
+          audioEnabled = false;
+          localStorage.setItem("selfStationAudioEnabled", "0");
+          audioGate.classList.add("visible");
+        }
+      }
+      setSyncStatus(`synchronized - drift ${Math.abs(drift).toFixed(2)}s`, Math.abs(drift) < .5 ? "ok" : "warn");
+    }
+
+    function setSyncStatus(message, type = "") {
+      $("#syncText").textContent = message;
+      $("#syncDot").className = `sync-dot ${type}`;
+    }
+
+    player.addEventListener("loadedmetadata", () => {
+      if (!lastState || !lastState.current) return;
+      streamRetries = 0;
+      clearTimeout(streamRetryTimer);
+      streamRetryTimer = null;
+      if (!isLiveRadio(lastState.current)) {
+        const target = targetPosition();
+        if (Number.isFinite(target)) player.currentTime = target;
+      }
+      syncAudio();
+    });
+    player.addEventListener("playing", () => {
+      streamRetries = 0;
+      setSyncStatus(isLiveRadio(lastState && lastState.current) ? "live radio via relay" : "audio active", "ok");
+    });
+    player.addEventListener("waiting", () => setSyncStatus("buffering audio", "warn"));
+    player.addEventListener("ended", async () => {
+      if (!currentQueueId) return;
+      if (isLiveRadio(lastState && lastState.current)) {
+        scheduleStreamRetry();
+        return;
+      }
+      await api("/api/ended", { method: "POST", body: JSON.stringify({ queue_id: currentQueueId }) }).catch(() => {});
+      fetchState();
+    });
+    function scheduleStreamRetry() {
+      if (!lastState || !lastState.current) return;
+      const retryQueueId = lastState.current.id;
+      streamRetries += 1;
+      const retryDelay = Math.min(30000, 1500 * (2 ** Math.min(streamRetries - 1, 5)));
+      setSyncStatus(`load failed - retrying in ${Math.ceil(retryDelay / 1000)}s`, "warn");
+      clearTimeout(streamRetryTimer);
+      streamRetryTimer = setTimeout(() => {
+        if (!lastState || !lastState.current) return;
+        if (lastState.current.id !== retryQueueId) return;
+        if (lastState.status !== "playing") return;
+        player.src = streamUrl(lastState.current, lastState);
+        player.load();
+      }, retryDelay);
+    }
+    player.addEventListener("error", scheduleStreamRetry);
+
+    audioGate.addEventListener("click", async () => {
+      audioEnabled = true;
+      localStorage.setItem("selfStationAudioEnabled", "1");
+      if (lastState && lastState.current && player.readyState >= 1) {
+        if (!isLiveRadio(lastState.current)) player.currentTime = targetPosition();
+        try { await player.play(); } catch { /* polling will keep the button visible */ }
+      }
+      syncAudio();
+    });
+
+    $("#volume").value = localStorage.getItem("selfStationVolume") || localStorage.getItem("jukeboxVolume") || "80";
+    player.volume = Number($("#volume").value) / 100;
+    $("#volume").addEventListener("input", (event) => {
+      player.volume = Number(event.target.value) / 100;
+      localStorage.setItem("selfStationVolume", event.target.value);
+    });
+
+    async function sendControl(action) {
+      try {
+        await api("/api/control", { method: "POST", body: JSON.stringify({ action }) });
+        await fetchState();
+      } catch (error) {
+        setSyncStatus(error.message, "warn");
+      }
+    }
+
+    $("#playPauseButton").addEventListener("click", () => sendControl(lastState && lastState.status === "playing" ? "pause" : "play"));
+    $("#skipButton").addEventListener("click", () => sendControl("skip"));
+    $("#autoRadioToggle").addEventListener("click", async () => {
+      const button = $("#autoRadioToggle");
+      const enabled = !(lastState && lastState.auto_radio);
+      button.disabled = true;
+      try {
+        await api("/api/settings", {
+          method: "POST",
+          body: JSON.stringify({ auto_radio: enabled }),
+        });
+        await fetchState();
+      } catch (error) {
+        $("#autoRadioState").textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    function looksLikePlaylistUrl(value) {
+      return /spotify:playlist:|open\.spotify\.com\/(?:embed\/)?playlist\/|(?:youtube\.com|youtu\.be)\/.*[?&]list=/i.test(value);
+    }
+
+    function playlistLimitOptions(count) {
+      const values = [...new Set([10, 25, 50, 100].filter((value) => value < count).concat(count))];
+      const preferred = Math.min(25, count);
+      return values.map((value) => `
+        <option value="${value}" ${value === preferred ? "selected" : ""}>${value === count ? `All (${count})` : `${value} tracks`}</option>
+      `).join("");
+    }
+
+    function renderPlaylistPreview(data) {
+      playlistPreviewData = data;
+      const preview = $("#playlistPreview");
+      const visibleTracks = (data.tracks || []).slice(0, 8);
+      const remaining = Math.max(0, Number(data.count || 0) - visibleTracks.length);
+      preview.innerHTML = `
+        <div class="playlist-summary">
+          ${data.cover ? `<img class="playlist-cover" src="${escapeHtml(data.cover)}" alt="">` : '<div class="playlist-cover"></div>'}
+          <div>
+            <div class="item-title">${escapeHtml(data.title)}</div>
+            <div class="item-meta">${data.source === "spotify" ? "Spotify" : "YouTube"} - ${data.count} track${data.count === 1 ? "" : "s"}${data.truncated ? " - limit of 100" : ""}</div>
+          </div>
+        </div>
+        <div class="playlist-actions">
+          <select id="playlistLimit" class="playlist-limit" aria-label="Track count">
+            ${playlistLimitOptions(data.count)}
+          </select>
+          <button id="importPlaylistButton" class="btn primary playlist-import-button" type="button">
+            ${ICONS.playlist}<span>Add to queue</span>
+          </button>
+        </div>
+        <div class="playlist-track-list">
+          ${visibleTracks.map((track) => `
+            <div class="playlist-track">
+              <div>
+                <div class="item-title">${escapeHtml(track.title)}</div>
+                <div class="item-meta">${escapeHtml(track.uploader || (data.source === "spotify" ? "Spotify" : "YouTube"))}</div>
+              </div>
+              <span class="item-meta">${formatDuration(track.duration)}</span>
+            </div>
+          `).join("")}
+          ${remaining ? `<div class="item-meta">+ ${remaining} track${remaining === 1 ? "" : "s"}</div>` : ""}
+        </div>
+        <div id="playlistImportStatus" class="sync-line"></div>
+      `;
+      preview.hidden = false;
+      $("#importPlaylistButton").addEventListener("click", importPlaylist);
+    }
+
+    async function loadPlaylistPreview(url) {
+      clearTimeout(playlistPollTimer);
+      playlistPreviewData = null;
+      $("#playlistPreview").hidden = true;
+      $("#searchStatus").textContent = "Identifying playlist...";
+      const data = await api(`/api/playlist/preview?url=${encodeURIComponent(url)}`);
+      renderPlaylistPreview(data);
+      $("#searchStatus").textContent = "Review the playlist and choose how many tracks to add.";
+    }
+
+    async function importPlaylist() {
+      if (!playlistPreviewData) return;
+      const button = $("#importPlaylistButton");
+      const status = $("#playlistImportStatus");
+      button.disabled = true;
+      status.textContent = "Preparing import...";
+      try {
+        const data = await api("/api/playlist/import", {
+          method: "POST",
+          body: JSON.stringify({
+            url: playlistPreviewData.url,
+            limit: Number($("#playlistLimit").value),
+            client_id: clientId,
+            device_name: deviceName,
+          }),
+        });
+        pollPlaylistImport(data.job.id);
+      } catch (error) {
+        status.innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+        button.disabled = false;
+      }
+    }
+
+    async function pollPlaylistImport(jobId) {
+      const status = $("#playlistImportStatus");
+      const button = $("#importPlaylistButton");
+      try {
+        const data = await api(`/api/playlist/import/${encodeURIComponent(jobId)}`);
+        const job = data.job;
+        if (job.status === "queued") {
+          status.textContent = "Import queued...";
+        } else if (job.status === "reading") {
+          status.textContent = "Reading playlist tracks...";
+        } else if (job.status === "running") {
+          const current = job.current_title ? ` - ${job.current_title}` : "";
+          status.textContent = `${job.processed}/${job.total} processed - ${job.added} added${current}`;
+        } else if (job.status === "completed") {
+          const ignored = Number(job.skipped || 0) + Number(job.failed || 0);
+          status.textContent = `${job.added} added${job.added === 1 ? "" : "s"} to queue${ignored ? ` - ${ignored} ignored${ignored === 1 ? "" : "s"}` : ""}.`;
+          button.innerHTML = `${ICONS.check}<span>Imported</span>`;
+          await fetchState();
+          return;
+        } else if (job.status === "error") {
+          throw new Error(job.error || "Could not import playlist");
+        }
+        playlistPollTimer = setTimeout(() => pollPlaylistImport(jobId), 1000);
+      } catch (error) {
+        status.innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+        button.disabled = false;
+      }
+    }
+
+    $("#searchForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = $("#searchInput").value.trim();
+      if (query.length < 2) return;
+      $("#searchButton").disabled = true;
+      $("#searchStatus").textContent = looksLikePlaylistUrl(query)
+        ? "Identifying playlist..."
+        : "Searching... the first request may take a few seconds.";
+      $("#results").innerHTML = "";
+      $("#playlistPreview").hidden = true;
+      try {
+        if (looksLikePlaylistUrl(query)) {
+          await loadPlaylistPreview(query);
+        } else {
+          playlistPreviewData = null;
+          const data = await api(`/api/search?q=${encodeURIComponent(query)}`);
+          renderResults(data.results || []);
+          $("#searchStatus").textContent = data.results.length ? `${data.results.length} results` : "No results found.";
+        }
+      } catch (error) {
+        $("#searchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("#searchButton").disabled = false;
+      }
+    });
+
+    function renderResults(results) {
+      $("#results").innerHTML = results.map((item, index) => `
+        <article class="result">
+          <img src="${escapeHtml(item.thumbnail)}" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.uploader || "YouTube")} - ${formatDuration(item.duration)} - ${formatViews(item.view_count)}</div>
+          </div>
+          <button class="btn compact icon add-result" type="button" data-index="${index}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
+        </article>
+      `).join("");
+      document.querySelectorAll(".add-result").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = results[Number(button.dataset.index)];
+          button.disabled = true;
+          button.title = "Adding";
+          try {
+            await api("/api/queue", {
+              method: "POST",
+              body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
+            });
+            button.innerHTML = ICONS.check;
+            button.title = "Added";
+            button.setAttribute("aria-label", "Added");
+            await fetchState();
+          } catch (error) {
+            button.disabled = false;
+            button.innerHTML = ICONS.retry;
+            button.title = "Try again";
+            button.setAttribute("aria-label", "Try again");
+          }
+        });
+      });
+    }
+
+    function renderRadioResults(results) {
+      $("#radioResults").innerHTML = results.map((station, index) => {
+        const location = [station.state, station.country].filter(Boolean).join(" / ");
+        const technical = [station.codec, station.bitrate ? `${station.bitrate} kbps` : "", station.language].filter(Boolean).join(" - ");
+        const tags = String(station.tags || "").split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 4).join(" - ");
+        return `
+          <article class="result">
+            <img class="radio-result-logo" src="${escapeHtml(station.favicon || RADIO_PLACEHOLDER)}" alt="" loading="lazy">
+            <div>
+              <div class="item-title">${escapeHtml(station.name)}</div>
+              <div class="item-meta radio-live-label">LIVE${location ? ` - ${escapeHtml(location)}` : ""}</div>
+              ${technical ? `<div class="item-meta">${escapeHtml(technical)}</div>` : ""}
+              ${tags ? `<div class="item-meta">${escapeHtml(tags)}</div>` : ""}
+            </div>
+            <button class="btn compact icon add-radio-result" type="button" data-index="${index}" aria-label="Add radio to queue" title="Add radio to queue">${ICONS.add}</button>
+          </article>
+        `;
+      }).join("");
+      document.querySelectorAll(".radio-result-logo").forEach((image) => {
+        image.addEventListener("error", () => { image.src = RADIO_PLACEHOLDER; }, { once: true });
+      });
+      document.querySelectorAll(".add-radio-result").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const station = results[Number(button.dataset.index)];
+          button.disabled = true;
+          button.title = "Adding";
+          try {
+            await api("/api/radio/queue", {
+              method: "POST",
+              body: JSON.stringify({
+                station_uuid: station.station_uuid,
+                client_id: clientId,
+                device_name: deviceName,
+              }),
+            });
+            button.innerHTML = ICONS.check;
+            button.title = "Added";
+            button.setAttribute("aria-label", "Added");
+            $("#radioSearchStatus").textContent = `${station.name} was added to the queue.`;
+            await fetchState();
+          } catch (error) {
+            button.disabled = false;
+            button.innerHTML = ICONS.retry;
+            button.title = error.message;
+            button.setAttribute("aria-label", error.message);
+            $("#radioSearchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+          }
+        });
+      });
+    }
+
+    $("#radioSearchForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = $("#radioSearchInput").value.trim();
+      if (query.length < 2) return;
+      $("#radioSearchButton").disabled = true;
+      $("#radioSearchStatus").textContent = "Searching stations...";
+      $("#radioResults").innerHTML = "";
+      try {
+        const data = await api(`/api/radio/search?q=${encodeURIComponent(query)}`);
+        const results = data.results || [];
+        renderRadioResults(results);
+        $("#radioSearchStatus").textContent = results.length
+          ? `${results.length} station${results.length === 1 ? "" : "s"} found.`
+          : "No stations found.";
+      } catch (error) {
+        $("#radioSearchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("#radioSearchButton").disabled = false;
+      }
+    });
+
+    updateDeviceLabel();
+    selectView(location.hash === "#radios" || localStorage.getItem("selfStationView") === "radios" ? "radios" : "jukebox");
+    if (!deviceName) openDeviceDialog(true);
+    fetchState();
+    stateTimer = setInterval(fetchState, 750);
+    syncTimer = setInterval(() => { updateProgress(); syncAudio(); }, 500);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) fetchState(); });
+  </script>
+</body>
+</html>
