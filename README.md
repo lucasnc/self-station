@@ -2,6 +2,10 @@
 
 Self Station is a self-hosted collaborative jukebox for a home server, LAN, studio, hackerspace, or small community room. It provides shared music playback, live radio discovery, and a server-side radio relay through a compact Python service.
 
+<p align="center">
+  <img src="docs/images/self-station-demo.png" alt="Self Station interface demo" width="1200">
+</p>
+
 ## Features
 
 - Shared queue with server-synchronized playback state.
