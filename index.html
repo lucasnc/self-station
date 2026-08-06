@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#080909">
   <title>Self Station</title>
-  <style>
+  <style media="not all">
     @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap");
 
     :root {
@@ -414,14 +414,15 @@
       .cover-disc { animation-duration: 30s; }
     }
   </style>
+  <link rel="stylesheet" href="/app.css">
 </head>
-<body>
+<body data-theme="midnight">
   <div id="pageBackdrop" class="page-backdrop" aria-hidden="true"></div>
   <div class="page-shade" aria-hidden="true"></div>
   <audio id="player" preload="metadata" playsinline></audio>
 
   <div class="shell">
-    <header>
+    <header class="masthead">
       <div class="brand">
         <span class="mark"></span>
         <div>
@@ -435,14 +436,9 @@
       </button>
     </header>
 
-    <nav class="tabs" aria-label="Jukebox sections">
-      <button class="tab-button active" type="button" data-view="jukebox" aria-selected="true">Jukebox</button>
-      <button class="tab-button" type="button" data-view="radios" aria-selected="false">Radio</button>
-    </nav>
-
     <main id="jukeboxView" class="grid view">
-      <div class="stack">
-        <section class="panel">
+      <div class="stack flow-column">
+        <section class="panel panel--now">
           <div class="panel-title">
             <h2>Now playing</h2>
             <span class="meta" id="playbackState">stopped</span>
@@ -451,7 +447,7 @@
           <div id="nowContent" hidden>
             <div class="now">
               <div id="nowDisc" class="now-artwork" aria-hidden="true">
-                <img id="nowCover" class="cover-disc" alt="">
+                <img id="nowCover" class="cover-disc" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%230b0d0d'/%3E%3Ccircle cx='60' cy='60' r='34' fill='none' stroke='%23354039' stroke-width='3'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%23ddff52'/%3E%3C/svg%3E" alt="">
               </div>
               <div>
                 <h3 id="nowTitle" class="track-title"></h3>
@@ -461,25 +457,50 @@
             </div>
             <div class="progress"><span id="progressBar"></span></div>
             <div class="progress-time"><span id="currentTime">0:00</span><span id="totalTime">0:00</span></div>
-            <div class="controls">
-              <button class="btn primary icon" id="playPauseButton" type="button" aria-label="Pause" title="Pause">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5Zm8 0h4v14h-4V5Z"/></svg>
-              </button>
-              <button class="btn icon" id="skipButton" type="button" aria-label="Skip" title="Skip">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7L5 5Zm11 0h3v14h-3V5Z"/></svg>
-              </button>
-              <div class="volume">
-                <span>Local volume</span>
-                <input id="volume" type="range" min="0" max="100" value="80" aria-label="Local volume">
-              </div>
-            </div>
-            <div class="sync-line"><span id="syncDot" class="sync-dot"></span><span id="syncText">waiting for audio</span></div>
           </div>
+          <div class="controls">
+            <button class="btn primary icon" id="playPauseButton" type="button" aria-label="Pause" title="Pause">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5Zm8 0h4v14h-4V5Z"/></svg>
+            </button>
+            <button class="btn icon" id="skipButton" type="button" aria-label="Skip" title="Skip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7L5 5Zm11 0h3v14h-3V5Z"/></svg>
+            </button>
+            <button class="btn icon lyrics-toggle" id="lyricsToggle" type="button" aria-label="Show lyrics" title="Show lyrics" aria-expanded="false" aria-controls="lyricsPanel" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.5a3.5 3.5 0 1 1-2-3.16V7.55l8-2V14a3.5 3.5 0 1 1-2-3.16V8.18l-4 1V14a3.5 3.5 0 1 1-2-3.16V4h2Zm-5.5 9.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"/></svg>
+            </button>
+            <button id="autoRadioToggle" class="btn icon" type="button" aria-label="Enable automatic radio" aria-pressed="false" title="Enable automatic radio">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v12H4V6Zm4 3h2v6H8V9Zm4-5h2v16h-2V4Zm4 3h2v10h-2V7Zm4 3h2v4h-2v-4Z"/></svg>
+            </button>
+            <div class="volume">
+              <span>Local volume</span>
+              <input id="volume" type="range" min="0" max="100" value="80" aria-label="Local volume">
+            </div>
+          </div>
+          <div class="sync-line"><span id="syncDot" class="sync-dot"></span><span id="syncText">waiting for audio</span></div>
+          <section id="lyricsPanel" class="lyrics-panel" hidden aria-live="polite">
+            <div class="lyrics-heading">
+              <h3>Lyrics</h3>
+              <span id="lyricsSource" class="meta">LRCLIB</span>
+            </div>
+            <div id="lyricsStatus" class="lyrics-status">Loading lyrics…</div>
+            <pre id="lyricsText" class="lyrics-text"></pre>
+          </section>
         </section>
 
-        <section class="panel">
+        <section class="panel panel--search">
           <div class="panel-title">
-            <h2>Search or import</h2>
+            <h2>Add to the flow</h2>
+          </div>
+          <p class="panel-intro">Search music, playlists, or live radio. Anything you add enters the shared flow for every connected device.</p>
+          <div class="search-mode-row">
+            <div class="search-mode-copy">
+              <span class="search-mode-label">searching</span>
+              <strong id="searchModeTitle">music and playlists</strong>
+            </div>
+            <div class="search-modes" role="group" aria-label="Search type">
+              <button id="musicSearchMode" class="search-mode-button active" type="button" data-search-mode="music" aria-pressed="true">Music</button>
+              <button id="radioSearchMode" class="search-mode-button" type="button" data-search-mode="radio" aria-pressed="false">Radio</button>
+            </div>
           </div>
           <form id="searchForm" class="search-form">
             <input id="searchInput" class="search-input" type="search" minlength="2" maxlength="2048" placeholder="Song, artist, video, or playlist URL" autocomplete="off" required>
@@ -490,28 +511,21 @@
           <div id="searchStatus" class="sync-line"></div>
           <div id="playlistPreview" class="playlist-preview" hidden></div>
           <div id="results" class="results"></div>
+          <div id="radioResults" class="results radio-results" hidden></div>
         </section>
       </div>
 
       <div class="stack queue-panel">
-        <section class="panel">
+        <section class="panel panel--queue">
           <div class="panel-title">
             <h2>Queue</h2>
             <span id="queueCount" class="meta">0 tracks</span>
           </div>
-          <div id="queue" class="queue"><div class="empty">No tracks waiting.</div></div>
-          <div class="radio-option">
-            <div class="radio-copy">
-              <strong>Auto radio</strong>
-              <small id="autoRadioState">Off</small>
-            </div>
-            <button id="autoRadioToggle" class="btn icon" type="button" aria-label="Enable auto radio" aria-pressed="false" title="Enable auto radio">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v12H4V6Zm4 3h2v6H8V9Zm4-5h2v16h-2V4Zm4 3h2v10h-2V7Zm4 3h2v4h-2v-4Z"/></svg>
-            </button>
-          </div>
+          <p class="panel-intro">The next track in the room appears here for everyone.</p>
+          <div id="queue" class="queue"><div class="empty">Nothing is waiting.</div></div>
         </section>
 
-        <section class="panel">
+        <section class="panel panel--recent">
           <div class="panel-title">
             <h2>Recent</h2>
           </div>
@@ -521,20 +535,20 @@
     </main>
 
     <main id="radioView" class="radio-view view" hidden>
-      <section class="panel">
+      <section class="panel panel--radio">
         <div class="panel-title">
           <h2>Search live radio</h2>
-          <span class="meta">self-hosted relay</span>
+          <span class="meta">relay through Self Station</span>
         </div>
         <p class="radio-intro">Search for a station by name. When added, Self Station receives the stream once and relays it to connected browsers.</p>
         <form id="radioSearchForm" class="search-form">
           <input id="radioSearchInput" class="search-input" type="search" minlength="2" maxlength="100" placeholder="Radio station name" autocomplete="off" required>
-          <button id="radioSearchButton" class="btn primary icon" type="submit" aria-label="Search radio stations" title="Search radio stations">
+          <button id="radioSearchButton" class="btn primary icon" type="submit" aria-label="Search radio" title="Search radio">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.7 19.3-4.2-4.2a7 7 0 1 0-1.4 1.4l4.2 4.2 1.4-1.4ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
           </button>
         </form>
         <div id="radioSearchStatus" class="sync-line">Enter at least two characters.</div>
-        <div id="radioResults" class="results radio-results"></div>
+        <div id="legacyRadioResults" class="results radio-results"></div>
       </section>
     </main>
   </div>
@@ -546,8 +560,8 @@
 
   <dialog id="deviceDialog">
     <form id="deviceForm" class="dialog-body" method="dialog">
-      <h2>This device name</h2>
-      <p class="meta">This name will be shown on tracks added by this browser.</p>
+        <h2>This device name</h2>
+        <p class="meta">This name appears on tracks added from this browser.</p>
       <input id="deviceInput" class="name-input" maxlength="40" required>
       <div class="dialog-actions">
         <button id="cancelDevice" class="btn icon" type="button" aria-label="Cancel" title="Cancel">
@@ -573,7 +587,9 @@
       check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.2 16.2-4.4-4.4-1.4 1.4L9.2 19 21 7.2l-1.4-1.4-10.4 10.4Z"/></svg>',
       playlist: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v2H4V5Zm0 6h11v2H4v-2Zm0 6h7v2H4v-2Zm14-3v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3Z"/></svg>',
       remove: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4V2h8v2h5v2H3V4h5Zm-2 4h12l-1 14H7L6 8Zm3 2 .6 10h1.5l-.4-10H9Zm4.3 0-.4 10h1.5l.6-10h-1.7Z"/></svg>',
-      retry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.7 9H3.2A9 9 0 1 0 5 6.7V3H3v7h7V8H6.5A7 7 0 0 1 12 5Z"/></svg>'
+      retry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.7 9H3.2A9 9 0 1 0 5 6.7V3H3v7h7V8H6.5A7 7 0 0 1 12 5Z"/></svg>',
+      moveUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 7-1.4 1.4L13 7.8V20h-2V7.8l-4.6 4.6L5 11l7-7Z"/></svg>',
+      moveDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 20-7-7 1.4-1.4 4.6 4.6V4h2v12.2l4.6-4.6L19 13l-7 7Z"/></svg>'
     };
     const clientId = localStorage.getItem("selfStationClientId") || localStorage.getItem("jukeboxClientId") ||
       (crypto.randomUUID ? crypto.randomUUID() : `client-${Date.now()}-${Math.random().toString(16).slice(2)}`);
@@ -593,6 +609,9 @@
     let streamRetryTimer = null;
     let playlistPreviewData = null;
     let playlistPollTimer = null;
+    let searchMode = "music";
+    let lyricsTrackKey = "";
+    let lyricsRequestId = 0;
 
     function suggestedDeviceName() {
       const ua = navigator.userAgent;
@@ -615,26 +634,46 @@
       $("#deviceLabel").textContent = deviceName || "Set device";
     }
 
-    function selectView(view) {
-      const selected = view === "radios" ? "radios" : "jukebox";
-      $("#jukeboxView").hidden = selected !== "jukebox";
-      $("#radioView").hidden = selected !== "radios";
-      document.querySelectorAll(".tab-button").forEach((button) => {
-        const active = button.dataset.view === selected;
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-selected", String(active));
-      });
+    function selectView() {
+      const selected = "jukebox";
+      $("#jukeboxView").hidden = false;
+      $("#radioView").hidden = true;
       localStorage.setItem("selfStationView", selected);
-      history.replaceState(null, "", selected === "radios" ? "#radios" : location.pathname + location.search);
-      if (selected === "radios") setTimeout(() => $("#radioSearchInput").focus(), 0);
+      history.replaceState(null, "", searchMode === "radio" ? "#radios" : location.pathname + location.search);
     }
 
-    document.querySelectorAll(".tab-button").forEach((button) => {
-      button.addEventListener("click", () => selectView(button.dataset.view));
+    function setSearchMode(mode) {
+      searchMode = mode === "radio" ? "radio" : "music";
+      const radio = searchMode === "radio";
+      $("#musicSearchMode").classList.toggle("active", !radio);
+      $("#radioSearchMode").classList.toggle("active", radio);
+      $("#musicSearchMode").setAttribute("aria-pressed", String(!radio));
+      $("#radioSearchMode").setAttribute("aria-pressed", String(radio));
+      $("#searchModeTitle").textContent = radio ? "live radio" : "music and playlists";
+      $("#searchInput").placeholder = radio ? "Station name, city, or genre" : "Song, artist, video, or playlist URL";
+      $("#searchButton").setAttribute("aria-label", radio ? "Search radio" : "Search music");
+      $("#searchButton").setAttribute("title", radio ? "Search radio" : "Search music");
+      $("#results").hidden = radio;
+      $("#radioResults").hidden = !radio;
+      $("#playlistPreview").hidden = true;
+      $("#results").innerHTML = "";
+      $("#radioResults").innerHTML = "";
+      $("#searchStatus").textContent = radio ? "Enter a station name to search live radio." : "";
+      history.replaceState(null, "", radio ? "#radios" : location.pathname + location.search);
+    }
+
+    document.querySelectorAll(".search-mode-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        setSearchMode(button.dataset.searchMode);
+        $("#searchInput").focus({ preventScroll: true });
+      });
     });
 
     $("#deviceButton").addEventListener("click", () => openDeviceDialog(false));
     $("#cancelDevice").addEventListener("click", () => deviceDialog.close());
+    $("#lyricsToggle").addEventListener("click", () => {
+      setLyricsExpanded($("#lyricsToggle").getAttribute("aria-expanded") !== "true");
+    });
     $("#deviceForm").addEventListener("submit", (event) => {
       event.preventDefault();
       const name = $("#deviceInput").value.trim().replace(/\s+/g, " ").slice(0, 40);
@@ -657,12 +696,12 @@
 
     function formatViews(value) {
       if (value === null || value === undefined) return "plays unavailable";
-      return `${new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(value)} plays`;
+      return `${new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value)} plays`;
     }
 
     function formatDate(timestamp) {
       if (!timestamp) return "";
-      return new Date(timestamp * 1000).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+      return new Date(timestamp * 1000).toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" });
     }
 
     function escapeHtml(value) {
@@ -688,9 +727,9 @@
           "LIVE",
           item.codec,
           item.bitrate ? `${item.bitrate} kbps` : "",
-        ].filter(Boolean).join(" - ");
+        ].filter(Boolean).join(" · ");
       }
-      return [item.uploader || "YouTube", formatDuration(item.duration), formatViews(item.view_count)].filter(Boolean).join(" - ");
+      return [item.uploader || "YouTube", formatDuration(item.duration), formatViews(item.view_count)].filter(Boolean).join(" · ");
     }
 
     function streamUrl(item, state = lastState) {
@@ -709,6 +748,54 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
       return data;
+    }
+
+    function setLyricsExpanded(expanded) {
+      const button = $("#lyricsToggle");
+      button.setAttribute("aria-expanded", String(expanded));
+      button.setAttribute("aria-label", expanded ? "Hide lyrics" : "Show lyrics");
+      button.title = expanded ? "Hide lyrics" : "Show lyrics";
+      $("#lyricsPanel").hidden = !expanded;
+    }
+
+    function resetLyricsPanel() {
+      lyricsRequestId += 1;
+      lyricsTrackKey = "";
+      $("#lyricsToggle").disabled = true;
+      setLyricsExpanded(false);
+      $("#lyricsSource").textContent = "LRCLIB";
+      $("#lyricsStatus").textContent = "Lyrics are unavailable for live radio.";
+      $("#lyricsText").textContent = "";
+    }
+
+    async function loadLyrics(current) {
+      if (!current || isLiveRadio(current)) {
+        resetLyricsPanel();
+        return;
+      }
+      const key = [current.video_id || current.id, current.title, current.uploader, current.duration].join("|");
+      $("#lyricsToggle").disabled = false;
+      if (key === lyricsTrackKey) return;
+      lyricsTrackKey = key;
+      const requestId = ++lyricsRequestId;
+      setLyricsExpanded(false);
+      $("#lyricsSource").textContent = "LRCLIB";
+      $("#lyricsStatus").textContent = "Loading lyrics…";
+      $("#lyricsText").textContent = "";
+      try {
+        const params = new URLSearchParams({ title: current.title || "", artist: current.uploader || "" });
+        const data = await api(`/api/lyrics?${params}`);
+        if (requestId !== lyricsRequestId || key !== lyricsTrackKey) return;
+        if (data.found && data.lyrics) {
+          $("#lyricsStatus").textContent = [data.artist, data.title].filter(Boolean).join(" · ") || "Lyrics found";
+          $("#lyricsText").textContent = data.lyrics;
+        } else {
+          $("#lyricsStatus").textContent = "Lyrics unavailable for this track.";
+        }
+      } catch (error) {
+        if (requestId !== lyricsRequestId || key !== lyricsTrackKey) return;
+        $("#lyricsStatus").textContent = error.message || "Lyrics unavailable right now.";
+      }
     }
 
     function targetPosition(state = lastState) {
@@ -738,7 +825,7 @@
         renderState(state);
         syncAudio();
         const names = state.clients.map((client) => client.name);
-        $("#connectionText").textContent = `${names.length} connected${names.length === 1 ? "" : "s"} - ${names.join(", ")}`;
+        $("#connectionText").textContent = `${names.length} listener${names.length === 1 ? "" : "s"} · ${names.join(", ")}`;
       } catch (error) {
         $("#connectionText").textContent = "server unavailable";
         $("#connectionText").classList.add("error");
@@ -758,12 +845,18 @@
       $("#playPauseButton").disabled = !current;
       $("#skipButton").disabled = !current;
       $("#nowDisc").classList.toggle("is-playing", Boolean(current) && state.status === "playing");
+      loadLyrics(current);
       if (current) {
-        $("#nowCover").src = artworkUrl(current);
-        $("#nowCover").onerror = () => { $("#nowCover").src = RADIO_PLACEHOLDER; };
+        const cover = $("#nowCover");
+        const artwork = artworkUrl(current);
+        if (cover.dataset.artwork !== artwork) {
+          cover.dataset.artwork = artwork;
+          cover.src = artwork;
+          cover.onerror = () => { cover.src = RADIO_PLACEHOLDER; };
+        }
         $("#nowTitle").textContent = current.title;
         $("#nowUploader").textContent = mediaSummary(current);
-        $("#nowAdded").textContent = `Added by ${current.added_by} at ${formatDate(current.added_at)} - ${current.local_plays}x on Self Station`;
+        $("#nowAdded").textContent = `Added by ${current.added_by} on ${formatDate(current.added_at)} · ${current.local_plays} plays in Self Station`;
         const isPlaying = state.status === "playing";
         $("#playPauseButton").innerHTML = isPlaying ? ICONS.pause : ICONS.play;
         $("#playPauseButton").setAttribute("aria-label", isPlaying ? "Pause" : "Play");
@@ -771,36 +864,29 @@
       }
 
       const items = state.queue || [];
-      $("#queueCount").textContent = `${items.length} ite${items.length === 1 ? "m" : "ns"}`;
+      $("#queueCount").textContent = `${items.length} track${items.length === 1 ? "" : "s"}`;
       $("#queue").innerHTML = items.length ? items.map((item, index) => `
         <article class="queue-item">
           <div class="queue-index">${String(index + 1).padStart(2, "0")}</div>
           <div>
             <div class="item-title">${escapeHtml(item.title)}</div>
             <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
-            <div class="item-meta">${escapeHtml(item.added_by)} - ${formatDate(item.added_at)} - ${item.local_plays}x on Self Station</div>
+            <div class="item-meta">${escapeHtml(item.added_by)} · ${formatDate(item.added_at)} · ${item.local_plays} plays in Self Station</div>
           </div>
-          <button class="btn compact icon remove-queue" type="button" data-queue-id="${Number(item.id)}" aria-label="Remove from queue" title="Remove from queue">${ICONS.remove}</button>
+          <div class="queue-actions">
+            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="up" aria-label="Move up" title="Move up" ${index === 0 ? "disabled" : ""}>${ICONS.moveUp}</button>
+            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="down" aria-label="Move down" title="Move down" ${index === items.length - 1 ? "disabled" : ""}>${ICONS.moveDown}</button>
+            <button class="btn compact icon remove-queue" type="button" data-queue-id="${Number(item.id)}" aria-label="Remove from queue" title="Remove from queue">${ICONS.remove}</button>
+          </div>
         </article>
-      `).join("") : '<div class="empty">No items waiting.</div>';
+      `).join("") : '<div class="empty">Nothing is waiting.</div>';
 
       const autoRadioEnabled = Boolean(state.auto_radio);
       const autoRadioToggle = $("#autoRadioToggle");
-      autoRadioToggle.classList.toggle("primary", autoRadioEnabled);
+      autoRadioToggle.classList.remove("primary");
       autoRadioToggle.setAttribute("aria-pressed", String(autoRadioEnabled));
-      autoRadioToggle.setAttribute("aria-label", `${autoRadioEnabled ? "Disable" : "Enable"} Auto radio`);
-      autoRadioToggle.title = `${autoRadioEnabled ? "Disable" : "Enable"} Auto radio`;
-      if (!autoRadioEnabled) {
-        $("#autoRadioState").textContent = "Off";
-      } else if (state.radio && state.radio.searching) {
-        $("#autoRadioState").textContent = "Searching for a related track...";
-      } else if (!current && !(state.recent_tracks || []).length) {
-        $("#autoRadioState").textContent = "On - waiting for a reference track";
-      } else if (state.radio && state.radio.last_error) {
-        $("#autoRadioState").textContent = "On - retrying shortly";
-      } else {
-        $("#autoRadioState").textContent = "On - continues when the queue ends";
-      }
+      autoRadioToggle.setAttribute("aria-label", `${autoRadioEnabled ? "Disable" : "Enable"} automatic radio`);
+      autoRadioToggle.title = `${autoRadioEnabled ? "Disable" : "Enable"} automatic radio`;
 
       const recentTracks = state.recent_tracks || [];
       $("#recentTracks").innerHTML = recentTracks.length ? recentTracks.map((item) => `
@@ -809,24 +895,58 @@
           <div>
             <div class="item-title">${escapeHtml(item.title)}</div>
             <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
-            <div class="item-meta">${formatDate(item.started_at)} - ${escapeHtml(item.added_by)}</div>
+            <div class="item-meta">${formatDate(item.started_at)} · ${escapeHtml(item.added_by)}</div>
           </div>
+          <button class="btn compact icon requeue-recent" type="button" data-index="${recentTracks.indexOf(item)}" aria-label="Add again to queue" title="Add again to queue">${ICONS.add}</button>
         </article>
       `).join("") : '<div class="empty">No recent playback.</div>';
       document.querySelectorAll(".rank-cover").forEach((image) => {
         image.addEventListener("error", () => { image.src = RADIO_PLACEHOLDER; }, { once: true });
       });
+      document.querySelectorAll(".requeue-recent").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = recentTracks[Number(button.dataset.index)];
+          button.disabled = true;
+          button.title = "Adding";
+          try {
+            if (isLiveRadio(item)) {
+              await api("/api/radio/queue", {
+                method: "POST",
+                body: JSON.stringify({ station_uuid: item.station_uuid, client_id: clientId, device_name: deviceName }),
+              });
+            } else {
+              await api("/api/queue", {
+                method: "POST",
+                body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
+              });
+            }
+            button.innerHTML = ICONS.check;
+            button.title = "Added";
+            button.setAttribute("aria-label", "Added");
+            await fetchState();
+          } catch (error) {
+            button.disabled = false;
+            button.innerHTML = ICONS.retry;
+            button.title = error.message;
+            button.setAttribute("aria-label", error.message);
+          }
+        });
+      });
       updateProgress();
     }
 
     $("#queue").addEventListener("click", async (event) => {
-      const button = event.target.closest(".remove-queue");
+      const button = event.target.closest(".remove-queue, .move-queue");
       if (!button) return;
       button.disabled = true;
       try {
-        await api("/api/queue/remove", {
+        const isMove = button.classList.contains("move-queue");
+        await api(isMove ? "/api/queue/move" : "/api/queue/remove", {
           method: "POST",
-          body: JSON.stringify({ queue_id: Number(button.dataset.queueId) }),
+          body: JSON.stringify({
+            queue_id: Number(button.dataset.queueId),
+            ...(isMove ? { direction: button.dataset.direction } : {}),
+          }),
         });
         await fetchState();
       } catch (error) {
@@ -885,7 +1005,7 @@
           player.load();
         }
         player.playbackRate = 1;
-        setSyncStatus("radio paused - relay stopped", "ok");
+        setSyncStatus("radio paused · relay stopped", "ok");
         return;
       }
 
@@ -908,7 +1028,7 @@
         player.pause();
         player.playbackRate = 1;
         if (Math.abs(drift) > .3) player.currentTime = target;
-        setSyncStatus("paused and synchronized", "ok");
+        setSyncStatus("paused and synced", "ok");
         return;
       }
 
@@ -930,7 +1050,7 @@
             audioGate.classList.add("visible");
           }
         }
-        setSyncStatus("live - local relay by Self Station", "ok");
+        setSyncStatus("live · local relay through Self Station", "ok");
         return;
       }
 
@@ -957,7 +1077,7 @@
           audioGate.classList.add("visible");
         }
       }
-      setSyncStatus(`synchronized - drift ${Math.abs(drift).toFixed(2)}s`, Math.abs(drift) < .5 ? "ok" : "warn");
+      setSyncStatus(`synced · drift ${Math.abs(drift).toFixed(2)}s`, Math.abs(drift) < .5 ? "ok" : "warn");
     }
 
     function setSyncStatus(message, type = "") {
@@ -995,7 +1115,7 @@
       const retryQueueId = lastState.current.id;
       streamRetries += 1;
       const retryDelay = Math.min(30000, 1500 * (2 ** Math.min(streamRetries - 1, 5)));
-      setSyncStatus(`load failed - retrying in ${Math.ceil(retryDelay / 1000)}s`, "warn");
+      setSyncStatus(`load failed · retrying in ${Math.ceil(retryDelay / 1000)}s`, "warn");
       clearTimeout(streamRetryTimer);
       streamRetryTimer = setTimeout(() => {
         if (!lastState || !lastState.current) return;
@@ -1012,7 +1132,7 @@
       localStorage.setItem("selfStationAudioEnabled", "1");
       if (lastState && lastState.current && player.readyState >= 1) {
         if (!isLiveRadio(lastState.current)) player.currentTime = targetPosition();
-        try { await player.play(); } catch { /* polling will keep the button visible */ }
+        try { await player.play(); } catch { /* polling keeps the button visible */ }
       }
       syncAudio();
     });
@@ -1046,7 +1166,8 @@
         });
         await fetchState();
       } catch (error) {
-        $("#autoRadioState").textContent = error.message;
+        setSyncStatus(error.message, "warn");
+        button.title = error.message;
       } finally {
         button.disabled = false;
       }
@@ -1074,7 +1195,7 @@
           ${data.cover ? `<img class="playlist-cover" src="${escapeHtml(data.cover)}" alt="">` : '<div class="playlist-cover"></div>'}
           <div>
             <div class="item-title">${escapeHtml(data.title)}</div>
-            <div class="item-meta">${data.source === "spotify" ? "Spotify" : "YouTube"} - ${data.count} track${data.count === 1 ? "" : "s"}${data.truncated ? " - limit of 100" : ""}</div>
+            <div class="item-meta">${data.source === "spotify" ? "Spotify" : "YouTube"} · ${data.count} track${data.count === 1 ? "" : "s"}${data.truncated ? " · limit 100" : ""}</div>
           </div>
         </div>
         <div class="playlist-actions">
@@ -1107,7 +1228,7 @@
       clearTimeout(playlistPollTimer);
       playlistPreviewData = null;
       $("#playlistPreview").hidden = true;
-      $("#searchStatus").textContent = "Identifying playlist...";
+      $("#searchStatus").textContent = "Reading playlist…";
       const data = await api(`/api/playlist/preview?url=${encodeURIComponent(url)}`);
       renderPlaylistPreview(data);
       $("#searchStatus").textContent = "Review the playlist and choose how many tracks to add.";
@@ -1118,7 +1239,7 @@
       const button = $("#importPlaylistButton");
       const status = $("#playlistImportStatus");
       button.disabled = true;
-      status.textContent = "Preparing import...";
+      status.textContent = "Preparing import…";
       try {
         const data = await api("/api/playlist/import", {
           method: "POST",
@@ -1143,20 +1264,20 @@
         const data = await api(`/api/playlist/import/${encodeURIComponent(jobId)}`);
         const job = data.job;
         if (job.status === "queued") {
-          status.textContent = "Import queued...";
+          status.textContent = "Import queued…";
         } else if (job.status === "reading") {
-          status.textContent = "Reading playlist tracks...";
+          status.textContent = "Reading playlist tracks…";
         } else if (job.status === "running") {
-          const current = job.current_title ? ` - ${job.current_title}` : "";
-          status.textContent = `${job.processed}/${job.total} processed - ${job.added} added${current}`;
+          const current = job.current_title ? ` · ${job.current_title}` : "";
+          status.textContent = `${job.processed}/${job.total} processed · ${job.added} added${current}`;
         } else if (job.status === "completed") {
           const ignored = Number(job.skipped || 0) + Number(job.failed || 0);
-          status.textContent = `${job.added} added${job.added === 1 ? "" : "s"} to queue${ignored ? ` - ${ignored} ignored${ignored === 1 ? "" : "s"}` : ""}.`;
+          status.textContent = `${job.added} added to queue${ignored ? ` · ${ignored} skipped` : ""}.`;
           button.innerHTML = `${ICONS.check}<span>Imported</span>`;
           await fetchState();
           return;
         } else if (job.status === "error") {
-          throw new Error(job.error || "Could not import playlist");
+          throw new Error(job.error || "The playlist could not be imported");
         }
         playlistPollTimer = setTimeout(() => pollPlaylistImport(jobId), 1000);
       } catch (error) {
@@ -1169,14 +1290,23 @@
       event.preventDefault();
       const query = $("#searchInput").value.trim();
       if (query.length < 2) return;
+      const radioMode = searchMode === "radio";
       $("#searchButton").disabled = true;
-      $("#searchStatus").textContent = looksLikePlaylistUrl(query)
-        ? "Identifying playlist..."
-        : "Searching... the first request may take a few seconds.";
+      $("#searchStatus").textContent = radioMode ? "Searching stations…" : looksLikePlaylistUrl(query)
+        ? "Reading playlist…"
+        : "Searching… the first query may take a few seconds.";
       $("#results").innerHTML = "";
+      $("#radioResults").innerHTML = "";
       $("#playlistPreview").hidden = true;
       try {
-        if (looksLikePlaylistUrl(query)) {
+        if (radioMode) {
+          const data = await api(`/api/radio/search?q=${encodeURIComponent(query)}`);
+          const radioResults = data.results || [];
+          renderRadioResults(radioResults);
+          $("#searchStatus").textContent = radioResults.length
+            ? `${radioResults.length} station${radioResults.length === 1 ? "" : "s"} found.`
+            : "No stations found.";
+        } else if (looksLikePlaylistUrl(query)) {
           await loadPlaylistPreview(query);
         } else {
           playlistPreviewData = null;
@@ -1197,7 +1327,7 @@
           <img src="${escapeHtml(item.thumbnail)}" alt="" loading="lazy">
           <div>
             <div class="item-title">${escapeHtml(item.title)}</div>
-            <div class="item-meta">${escapeHtml(item.uploader || "YouTube")} - ${formatDuration(item.duration)} - ${formatViews(item.view_count)}</div>
+            <div class="item-meta">${escapeHtml(item.uploader || "YouTube")} · ${formatDuration(item.duration)} · ${formatViews(item.view_count)}</div>
           </div>
           <button class="btn compact icon add-result" type="button" data-index="${index}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
         </article>
@@ -1219,8 +1349,8 @@
           } catch (error) {
             button.disabled = false;
             button.innerHTML = ICONS.retry;
-            button.title = "Try again";
-            button.setAttribute("aria-label", "Try again");
+            button.title = "Tentar novamente";
+            button.setAttribute("aria-label", "Tentar novamente");
           }
         });
       });
@@ -1229,14 +1359,14 @@
     function renderRadioResults(results) {
       $("#radioResults").innerHTML = results.map((station, index) => {
         const location = [station.state, station.country].filter(Boolean).join(" / ");
-        const technical = [station.codec, station.bitrate ? `${station.bitrate} kbps` : "", station.language].filter(Boolean).join(" - ");
-        const tags = String(station.tags || "").split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 4).join(" - ");
+        const technical = [station.codec, station.bitrate ? `${station.bitrate} kbps` : "", station.language].filter(Boolean).join(" · ");
+        const tags = String(station.tags || "").split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 4).join(" · ");
         return `
           <article class="result">
             <img class="radio-result-logo" src="${escapeHtml(station.favicon || RADIO_PLACEHOLDER)}" alt="" loading="lazy">
             <div>
               <div class="item-title">${escapeHtml(station.name)}</div>
-              <div class="item-meta radio-live-label">LIVE${location ? ` - ${escapeHtml(location)}` : ""}</div>
+            <div class="item-meta radio-live-label">LIVE${location ? ` · ${escapeHtml(location)}` : ""}</div>
               ${technical ? `<div class="item-meta">${escapeHtml(technical)}</div>` : ""}
               ${tags ? `<div class="item-meta">${escapeHtml(tags)}</div>` : ""}
             </div>
@@ -1264,14 +1394,14 @@
             button.innerHTML = ICONS.check;
             button.title = "Added";
             button.setAttribute("aria-label", "Added");
-            $("#radioSearchStatus").textContent = `${station.name} was added to the queue.`;
+            $("#searchStatus").textContent = `${station.name} was added to the queue.`;
             await fetchState();
           } catch (error) {
             button.disabled = false;
             button.innerHTML = ICONS.retry;
             button.title = error.message;
             button.setAttribute("aria-label", error.message);
-            $("#radioSearchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+            $("#searchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
           }
         });
       });
@@ -1282,7 +1412,7 @@
       const query = $("#radioSearchInput").value.trim();
       if (query.length < 2) return;
       $("#radioSearchButton").disabled = true;
-      $("#radioSearchStatus").textContent = "Searching stations...";
+      $("#radioSearchStatus").textContent = "Searching stations…";
       $("#radioResults").innerHTML = "";
       try {
         const data = await api(`/api/radio/search?q=${encodeURIComponent(query)}`);
@@ -1299,7 +1429,8 @@
     });
 
     updateDeviceLabel();
-    selectView(location.hash === "#radios" || localStorage.getItem("selfStationView") === "radios" ? "radios" : "jukebox");
+    selectView();
+    setSearchMode(location.hash === "#radios" || localStorage.getItem("selfStationView") === "radios" ? "radio" : "music");
     if (!deviceName) openDeviceDialog(true);
     fetchState();
     stateTimer = setInterval(fetchState, 750);

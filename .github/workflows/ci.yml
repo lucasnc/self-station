@@ -24,3 +24,6 @@ jobs:
 
       - name: Compile Python
         run: python -m py_compile server.py
+
+      - name: Validate Compose file
+        run: docker compose config --quiet

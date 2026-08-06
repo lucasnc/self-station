@@ -30,6 +30,7 @@ from yt_dlp.utils import DownloadError
 
 BASE_DIR = Path(__file__).resolve().parent
 INDEX_FILE = BASE_DIR / "index.html"
+APP_CSS_FILE = BASE_DIR / "app.css"
 DB_FILE = Path(os.environ.get("SELF_STATION_DB", BASE_DIR / "self_station.db"))
 HOST = os.environ.get("SELF_STATION_HOST", "0.0.0.0")
 PORT = int(os.environ.get("SELF_STATION_PORT", "8090"))
@@ -41,6 +42,8 @@ RADIO_BROWSER_BASE_URL = os.environ.get(
     "SELF_STATION_BROWSER_URL", "https://all.api.radio-browser.info"
 ).rstrip("/")
 RADIO_BROWSER_USER_AGENT = "self-station/2.0"
+LYRICS_BASE_URL = os.environ.get("SELF_STATION_LYRICS_URL", "https://lrclib.net").rstrip("/")
+LYRICS_USER_AGENT = "self-station/2.0"
 RADIO_RELAY_BITRATE = max(
     64, min(int(os.environ.get("SELF_STATION_RELAY_BITRATE", "128")), 320)
 )
@@ -96,6 +99,7 @@ PLAYLIST_IMPORT_SEMAPHORE = threading.BoundedSemaphore(1)
 STOP_EVENT = threading.Event()
 
 SEARCH_CACHE: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+LYRICS_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
 LIVE_RADIO_SEARCH_CACHE: dict[str, tuple[float, list[dict[str, Any]]]] = {}
 STREAM_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
 CLIENTS: dict[str, dict[str, Any]] = {}
@@ -383,7 +387,7 @@ def register_client(client_id: str, device_name: str) -> None:
     with CLIENT_LOCK:
         CLIENTS[client_id[:80]] = {
             "id": client_id[:80],
-            "name": clean_text(device_name, 40, "Browser"),
+            "name": clean_text(device_name, 40, "Navegador"),
             "last_seen": now,
         }
         stale = [key for key, value in CLIENTS.items() if now - value["last_seen"] > 25]
@@ -474,11 +478,11 @@ def add_to_queue(payload: dict[str, Any], radio_seed_id: str | None = None) -> d
     video_id = clean_text(payload.get("video_id"), 20)
     if not VIDEO_ID_RE.fullmatch(video_id):
         raise ValueError("Invalid video ID")
-    title = clean_text(payload.get("title"), 240, "YouTube video")
+    title = clean_text(payload.get("title"), 240, "Video do YouTube")
     uploader = clean_text(payload.get("uploader"), 160)
     duration = as_float(payload.get("duration"))
     view_count = as_int_or_none(payload.get("view_count"))
-    added_by = clean_text(payload.get("device_name"), 40, "Browser")
+    added_by = clean_text(payload.get("device_name"), 40, "Navegador")
     client_id = clean_text(payload.get("client_id"), 80, "unknown")
     now = time.time()
 
@@ -542,7 +546,7 @@ def remove_from_queue(queue_id: int) -> dict[str, Any]:
     with DB_LOCK, db_connect() as db:
         row = db.execute("SELECT status FROM queue WHERE id = ?", (queue_id,)).fetchone()
         if row is None:
-            raise ValueError("Track not found in the queue")
+            raise ValueError("Track not found in queue")
         if row["status"] != "pending":
             raise ValueError("Only pending tracks can be removed")
         cursor = db.execute(
@@ -555,8 +559,47 @@ def remove_from_queue(queue_id: int) -> dict[str, Any]:
         )
         db.commit()
         if cursor.rowcount != 1:
-            raise ValueError("The track already left the queue")
+            raise ValueError("The track has already left the queue")
         return {"removed": True, "queue_id": queue_id}
+
+
+def move_queue_item(queue_id: int, direction: str) -> dict[str, Any]:
+    if queue_id <= 0:
+        raise ValueError("Invalid queue item")
+    if direction not in {"up", "down"}:
+        raise ValueError("Invalid move direction")
+    with DB_LOCK, db_connect() as db:
+        row = db.execute(
+            "SELECT id, status FROM queue WHERE id = ?",
+            (queue_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("Track not found in queue")
+        if row["status"] != "pending":
+            raise ValueError("Only pending tracks can be moved")
+
+        pending_ids = [
+            int(item["id"])
+            for item in db.execute(
+                """
+                SELECT id FROM queue
+                 WHERE status = 'pending'
+                 ORDER BY CASE WHEN added_client_id = 'auto-radio' THEN 1 ELSE 0 END, id
+                """
+            ).fetchall()
+        ]
+        current_index = pending_ids.index(queue_id)
+        target_index = current_index - 1 if direction == "up" else current_index + 1
+        if target_index < 0 or target_index >= len(pending_ids):
+            return {"moved": False, "queue_id": queue_id}
+
+        target_id = pending_ids[target_index]
+        temporary_id = -max(queue_id, target_id) - 1
+        db.execute("UPDATE queue SET id = ? WHERE id = ?", (temporary_id, queue_id))
+        db.execute("UPDATE queue SET id = ? WHERE id = ?", (queue_id, target_id))
+        db.execute("UPDATE queue SET id = ? WHERE id = ?", (target_id, temporary_id))
+        db.commit()
+        return {"moved": True, "queue_id": queue_id, "direction": direction}
 
 
 def control_playback(action: str) -> None:
@@ -592,7 +635,7 @@ def control_playback(action: str) -> None:
             finish_current(db, now, "skipped")
         else:
             if action not in {"play", "pause", "skip"}:
-                raise ValueError("Invalid control action")
+                raise ValueError("Invalid control")
         db.commit()
     if action in {"pause", "skip"}:
         LIVE_RADIO_RELAY.stop()
@@ -624,7 +667,7 @@ def handle_ended(queue_id: int) -> None:
 def search_youtube(query: str) -> list[dict[str, Any]]:
     query = clean_text(query, 120)
     if len(query) < 2:
-        raise ValueError("Enter at least 2 characters")
+        raise ValueError("Enter at least two characters")
     cache_key = query.casefold()
     now = time.time()
     with CACHE_LOCK:
@@ -654,7 +697,7 @@ def search_youtube(query: str) -> list[dict[str, Any]]:
             results.append(
                 {
                     "video_id": video_id,
-                    "title": clean_text(entry.get("title"), 240, "YouTube video"),
+                    "title": clean_text(entry.get("title"), 240, "Video do YouTube"),
                     "uploader": clean_text(
                         entry.get("channel") or entry.get("uploader"), 160
                     ),
@@ -668,6 +711,119 @@ def search_youtube(query: str) -> list[dict[str, Any]]:
         return results
     finally:
         SEARCH_SEMAPHORE.release()
+
+
+def normalize_lyrics(value: Any) -> str:
+    text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    return text[:24000]
+
+
+def strip_lyric_timestamps(value: Any) -> str:
+    text = normalize_lyrics(value)
+    return re.sub(r"\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?\]\s*", "", text).strip()
+
+
+def lyrics_query_candidates(title: str, artist: str = "") -> list[tuple[str, str]]:
+    raw_title = clean_text(title, 240)
+    raw_artist = clean_text(artist, 160)
+    if len(raw_title) < 2:
+        raise ValueError("A song title is required")
+
+    cleaned_title = re.sub(
+        r"\s*(?:\[[^\]]*(?:official|video|audio|lyrics?|hd|4k|visualizer|remaster|live)[^\]]*\]|\([^)]*(?:official|video|audio|lyrics?|hd|4k|visualizer|remaster|live|from\b)[^)]*\))\s*$",
+        "",
+        raw_title,
+        flags=re.IGNORECASE,
+    ).strip(" -–—")
+    candidates: list[tuple[str, str]] = []
+
+    def add_candidate(track: str, candidate_artist: str) -> None:
+        track = clean_text(track, 240)
+        candidate_artist = clean_text(candidate_artist, 160)
+        candidate = (track, candidate_artist)
+        if len(track) >= 2 and candidate not in candidates:
+            candidates.append(candidate)
+
+    embedded = re.match(
+        r"^\s*(?P<artist>[^:–—-]{2,80})\s*(?::|\s+[–—-]\s+)\s*(?P<title>.+?)\s*$",
+        cleaned_title,
+    )
+    if embedded:
+        add_candidate(embedded.group("title"), embedded.group("artist"))
+        add_candidate(embedded.group("title"), raw_artist)
+        cleaned_title = embedded.group("title").strip()
+    add_candidate(cleaned_title, raw_artist)
+    add_candidate(cleaned_title, "")
+    add_candidate(raw_title, raw_artist)
+    return candidates
+
+
+def fetch_lyrics_candidate(title: str, artist: str) -> dict[str, Any]:
+    cache_key = f"{title.casefold()}|{artist.casefold()}"
+    now = time.time()
+    with CACHE_LOCK:
+        cached = LYRICS_CACHE.get(cache_key)
+        if cached and now - cached[0] < 3600:
+            return cached[1]
+
+    parameters = {"track_name": title}
+    if artist:
+        parameters["artist_name"] = artist
+    url = f"{LYRICS_BASE_URL}/api/get?{urllib.parse.urlencode(parameters)}"
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": LYRICS_USER_AGENT,
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=12) as response:
+            body = response.read(2 * 1024 * 1024 + 1)
+    except urllib.error.HTTPError as exc:
+        if exc.code == HTTPStatus.NOT_FOUND:
+            result = {"found": False, "lyrics": "", "source": "LRCLIB"}
+            with CACHE_LOCK:
+                LYRICS_CACHE[cache_key] = (now, result)
+            return result
+        raise RuntimeError("The lyrics service is unavailable") from exc
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise RuntimeError("The lyrics service is unavailable") from exc
+
+    if len(body) > 2 * 1024 * 1024:
+        raise RuntimeError("The lyrics response was too large")
+    try:
+        payload = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("The lyrics response was invalid") from exc
+
+    lyrics = normalize_lyrics(payload.get("plainLyrics"))
+    if not lyrics:
+        lyrics = strip_lyric_timestamps(payload.get("syncedLyrics"))
+    result = {
+        "found": bool(lyrics),
+        "lyrics": lyrics,
+        "source": "LRCLIB",
+        "title": clean_text(payload.get("trackName"), 240, title),
+        "artist": clean_text(payload.get("artistName"), 160, artist),
+    }
+    with CACHE_LOCK:
+        LYRICS_CACHE[cache_key] = (now, result)
+    return result
+
+
+def lyrics_lookup(title: str, artist: str = "") -> dict[str, Any]:
+    candidates = lyrics_query_candidates(title, artist)
+    request_key = f"{candidates[0][0].casefold()}|{candidates[0][1].casefold()}"
+    last_result: dict[str, Any] = {"found": False, "lyrics": "", "source": "LRCLIB"}
+    for candidate_title, candidate_artist in candidates:
+        result = fetch_lyrics_candidate(candidate_title, candidate_artist)
+        last_result = result
+        if result.get("found"):
+            with CACHE_LOCK:
+                LYRICS_CACHE[request_key] = (time.time(), result)
+            return result
+    return last_result
 
 
 def radio_browser_request(path: str, parameters: dict[str, Any] | None = None) -> Any:
@@ -721,7 +877,7 @@ def public_stream_url(value: Any) -> str:
             if not ipaddress.ip_address(host).is_global:
                 raise ValueError("The radio stream points to a private network")
         except ValueError as exc:
-            if "rede privada" in str(exc):
+            if "private network" in str(exc):
                 raise
             raise ValueError("Invalid radio stream address") from exc
     return url
@@ -742,7 +898,7 @@ def normalize_live_radio(entry: dict[str, Any]) -> dict[str, Any] | None:
         return None
     return {
         "station_uuid": station_uuid.lower(),
-        "name": clean_text(entry.get("name"), 240, "Radio sem nome"),
+        "name": clean_text(entry.get("name"), 240, "Unnamed radio"),
         "stream_url": stream_url,
         "homepage": clean_text(entry.get("homepage"), 1024),
         "favicon": clean_text(entry.get("favicon"), 1024),
@@ -761,7 +917,7 @@ def normalize_live_radio(entry: dict[str, Any]) -> dict[str, Any] | None:
 def search_live_radios(query: str) -> list[dict[str, Any]]:
     query = clean_text(query, 100)
     if len(query) < 2:
-        raise ValueError("Enter at least 2 characters")
+        raise ValueError("Enter at least two characters")
     cache_key = query.casefold()
     now = time.time()
     with CACHE_LOCK:
@@ -804,7 +960,7 @@ def add_live_radio_to_queue(payload: dict[str, Any]) -> dict[str, Any]:
     station = get_live_radio_station(payload.get("station_uuid"))
     station_uuid = station["station_uuid"]
     media_id = f"radio:{station_uuid}"
-    added_by = clean_text(payload.get("device_name"), 40, "Browser")
+    added_by = clean_text(payload.get("device_name"), 40, "Navegador")
     client_id = clean_text(payload.get("client_id"), 80, "unknown")
     location = " / ".join(
         value for value in (station["state"], station["country"]) if value
@@ -958,7 +1114,7 @@ def spotify_playlist_preview(url: str) -> dict[str, Any]:
         next_data = json.loads(match.group(1))
         entity = next_data["props"]["pageProps"]["state"]["data"]["entity"]
     except (KeyError, TypeError, json.JSONDecodeError) as exc:
-        raise ValueError("Could not identify this playlist tracks") from exc
+        raise ValueError("Could not identify tracks in this playlist") from exc
 
     track_list = entity.get("trackList") if isinstance(entity, dict) else None
     if not isinstance(track_list, list):
@@ -1021,7 +1177,7 @@ def youtube_playlist_preview(url: str) -> dict[str, Any]:
         tracks.append(
             {
                 "video_id": video_id,
-                "title": clean_text(entry.get("title"), 240, "YouTube video"),
+                "title": clean_text(entry.get("title"), 240, "Video do YouTube"),
                 "uploader": clean_text(entry.get("channel") or entry.get("uploader"), 160),
                 "duration": as_float(entry.get("duration")),
                 "view_count": as_int_or_none(entry.get("view_count")),
@@ -1052,7 +1208,7 @@ def playlist_preview(value: Any) -> dict[str, Any]:
             return cached[1]
 
     if not PLAYLIST_EXTRACT_SEMAPHORE.acquire(blocking=False):
-        raise RuntimeError("Another playlist is being identified. Try again shortly")
+        raise RuntimeError("Outra playlist esta sendo identificada. Tente novamente em instantes")
     try:
         preview = (
             spotify_playlist_preview(normalized_url)
@@ -1190,7 +1346,7 @@ def playlist_import_worker(job_id: str, url: str, limit: int, device_name: str, 
 def start_playlist_import(payload: dict[str, Any]) -> dict[str, Any]:
     source, _, normalized_url = normalize_playlist_url(payload.get("url"))
     limit = playlist_limit(payload.get("limit"))
-    device_name = clean_text(payload.get("device_name"), 40, "Browser")
+    device_name = clean_text(payload.get("device_name"), 40, "Navegador")
     client_id = clean_text(payload.get("client_id"), 80, "unknown")
     job_id = uuid.uuid4().hex
     now = time.time()
@@ -1227,7 +1383,7 @@ def get_playlist_job(job_id: str) -> dict[str, Any]:
     with PLAYLIST_LOCK:
         job = PLAYLIST_JOBS.get(clean_text(job_id, 40))
         if not job:
-            raise ValueError("Import job not found or expired")
+            raise ValueError("Import not found or expired")
         return dict(job)
 
 
@@ -1322,13 +1478,13 @@ def related_mix(seed: dict[str, Any]) -> list[dict[str, Any]]:
         candidates.append(
             {
                 "video_id": candidate_id,
-                "title": clean_text(entry.get("title"), 240, "YouTube video"),
+                "title": clean_text(entry.get("title"), 240, "Video do YouTube"),
                 "uploader": clean_text(
                     entry.get("channel") or entry.get("uploader"), 160
                 ),
                 "duration": as_float(entry.get("duration")),
                 "view_count": as_int_or_none(entry.get("view_count")),
-                "device_name": "Auto radio",
+                "device_name": "Automatic radio",
                 "client_id": "auto-radio",
             }
         )
@@ -1349,7 +1505,7 @@ def radio_loop() -> None:
                 RADIO_STATE["last_error"] = ""
             candidates = related_mix(seed)
             if not candidates:
-                raise RuntimeError("No related tracks available")
+                raise RuntimeError("No related track is available")
             result = add_to_queue(candidates[0], radio_seed_id=seed["video_id"])
             with RADIO_LOCK:
                 if result.get("added"):
@@ -1458,7 +1614,7 @@ def maintenance_loop() -> None:
             with DB_LOCK, db_connect() as db:
                 advance_if_finished(db, time.time())
                 db.commit()
-        except Exception as exc:  # pragma: no cover - service guard
+        except Exception as exc:  # pragma: no cover - protecao do servico
             print(f"maintenance error: {exc}", flush=True)
 
 
@@ -1488,7 +1644,7 @@ def current_live_radio(queue_id: int) -> dict[str, Any]:
 
 
 class LiveRadioRelay:
-    """One FFmpeg process receives the radio stream and fans out MP3 to browsers."""
+    """Um unico FFmpeg recebe a radio e distribui MP3 para os navegadores."""
 
     def __init__(self) -> None:
         self.lock = threading.RLock()
@@ -1590,7 +1746,7 @@ class LiveRadioRelay:
         error = ""
         try:
             if process.stdout is None:
-                raise RuntimeError("FFmpeg has no audio output")
+                raise RuntimeError("FFmpeg sem saida de audio")
             while not STOP_EVENT.is_set():
                 chunk = process.stdout.read(16 * 1024)
                 if not chunk:
@@ -1612,7 +1768,7 @@ class LiveRadioRelay:
                                 subscriber.put_nowait(None)
                             except (queue_module.Empty, queue_module.Full):
                                 pass
-        except Exception as exc:  # pragma: no cover - depends on the external stream
+        except Exception as exc:  # pragma: no cover - depende do stream externo
             error = clean_text(str(exc), 240)
         finally:
             try:
@@ -1705,7 +1861,7 @@ class Handler(BaseHTTPRequestHandler):
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise ValueError("Invalid JSON") from exc
         if not isinstance(data, dict):
-            raise ValueError("Expected a JSON object")
+            raise ValueError("Objeto JSON esperado")
         return data
 
     def do_HEAD(self) -> None:  # noqa: N802
@@ -1730,6 +1886,13 @@ class Handler(BaseHTTPRequestHandler):
                 result = remove_from_queue(int(payload.get("queue_id", 0)))
                 self.send_json({"ok": True, **result})
                 return
+            if parsed.path == "/api/queue/move":
+                result = move_queue_item(
+                    int(payload.get("queue_id", 0)),
+                    clean_text(payload.get("direction"), 10),
+                )
+                self.send_json({"ok": True, **result})
+                return
             if parsed.path == "/api/playlist/import":
                 job = start_playlist_import(payload)
                 self.send_json({"ok": True, "job": job}, 202)
@@ -1740,7 +1903,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             if parsed.path == "/api/settings":
                 if not isinstance(payload.get("auto_radio"), bool):
-                    raise ValueError("auto_radio must be true or false")
+                    raise ValueError("auto_radio deve ser verdadeiro ou falso")
                 set_auto_radio(payload["auto_radio"])
                 self.send_json({"ok": True, "auto_radio": payload["auto_radio"]})
                 return
@@ -1772,6 +1935,17 @@ class Handler(BaseHTTPRequestHandler):
                 if not head_only:
                     self.wfile.write(body)
                 return
+            if parsed.path == "/app.css":
+                body = APP_CSS_FILE.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-cache")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.end_headers()
+                if not head_only:
+                    self.wfile.write(body)
+                return
             if parsed.path == "/api/health":
                 self.send_json(
                     {
@@ -1793,6 +1967,14 @@ class Handler(BaseHTTPRequestHandler):
             if parsed.path == "/api/search":
                 results = search_youtube(query.get("q", [""])[0])
                 self.send_json({"results": results})
+                return
+            if parsed.path == "/api/lyrics":
+                self.send_json(
+                    lyrics_lookup(
+                        query.get("title", [""])[0],
+                        query.get("artist", [""])[0],
+                    )
+                )
                 return
             if parsed.path == "/api/radio/search":
                 results = search_live_radios(query.get("q", [""])[0])
@@ -1823,7 +2005,7 @@ class Handler(BaseHTTPRequestHandler):
             video_id = parsed.path.removeprefix("/stream/") if parsed.path.startswith("/stream/") else ""
             if video_id:
                 mark_stream_error(video_id, str(exc))
-            message = "Could not fetch audio" if video_id else "Could not search YouTube"
+            message = "Could not obtain audio" if video_id else "Could not search YouTube"
             self.send_error_json(message, 502)
         except Exception as exc:
             print(f"GET error: {exc}", flush=True)

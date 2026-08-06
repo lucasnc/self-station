@@ -2,8 +2,9 @@
 
 Self Station is a compact web application:
 
-- `server.py` provides the HTTP API, static file serving, queue state, SQLite persistence, YouTube lookup, Radio Browser lookup, and live radio relay orchestration.
+- `server.py` provides the HTTP API, static asset serving, queue state, SQLite persistence, YouTube lookup, Radio Browser lookup, lyrics lookup, and live radio relay orchestration.
 - `index.html` contains the browser UI and client-side playback logic.
+- `app.css` contains the public visual system for the UI.
 - `compose.yml` and `Dockerfile` define the production container.
 
 ## Runtime Flow
@@ -22,7 +23,8 @@ The SQLite database stores:
 - known tracks and live radio metadata;
 - pending, playing, played, skipped, or errored queue items;
 - playback state;
-- application settings such as automatic radio mode.
+- application settings such as automatic radio mode;
+- the active listening state used by lyrics and queue controls.
 
 Docker deployments should mount `/data` to a persistent host path.
 

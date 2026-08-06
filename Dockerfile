@@ -21,7 +21,7 @@ RUN python3 -m venv /opt/venv \
 
 WORKDIR /app
 
-COPY server.py index.html README.md ./
+COPY server.py index.html app.css README.md ./
 
 RUN chown -R node:node /app
 

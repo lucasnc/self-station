@@ -19,7 +19,8 @@ services:
       SELF_STATION_PLAYLIST_IMPORT_LIMIT: "100"
       SELF_STATION_PORT: "8090"
       SELF_STATION_RELAY_BITRATE: "128"
-      SELF_STATION_SEARCH_LIMIT: "12"
+      SELF_STATION_SEARCH_LIMIT: "25"
+      SELF_STATION_LYRICS_URL: https://lrclib.net
       SELF_STATION_STREAM_RESOLVE_WAIT_SECONDS: "30"
     volumes:
       - /srv/data/self-station:/data
