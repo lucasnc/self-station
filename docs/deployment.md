@@ -10,6 +10,10 @@ docker compose up -d --build
 
 The default service listens on port `8090` and persists SQLite data in `/srv/data/self-station`.
 
+Open `http://localhost:8090/` for **In the Black**. Reverse proxies should forward `/in-the-black/`, `/api/`, `/stream/`, and `/relay/` to the same service.
+
+To check deployment, request `/api/health` and confirm that the homepage and its `/in-the-black/` assets return HTTP 200.
+
 Useful commands:
 
 ```bash

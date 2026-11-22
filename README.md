@@ -8,6 +8,9 @@ Self Station is a self-hosted collaborative jukebox for a home server, LAN, stud
 
 ## Features
 
+- Dock with search, queue, recents, favorites, playlists, and device controls.
+- Browser-local volume, audio presets, and fixed or artwork-derived accent colors.
+- Podcast search and episode queueing, related tracks, and optional Last.fm context.
 - Shared queue with server-synchronized playback state.
 - YouTube search, queueing, playlist preview, and playlist import through `yt-dlp`.
 - Live radio search through the public Radio Browser catalog.
@@ -53,20 +56,20 @@ python server.py
 
 The service is configured with environment variables. The Compose file provides production-friendly defaults.
 
-| Variable | Default | Description |
-| --- | ---: | --- |
-| `SELF_STATION_HOST` | `0.0.0.0` | Bind address. |
-| `SELF_STATION_PORT` | `8090` | HTTP port. |
-| `SELF_STATION_DB` | `./self_station.db` | SQLite database path. |
-| `SELF_STATION_SEARCH_LIMIT` | `12` | Maximum YouTube search results, capped at 25. |
-| `SELF_STATION_PLAYLIST_IMPORT_LIMIT` | `100` | Maximum playlist items imported per job. |
-| `SELF_STATION_BROWSER_URL` | `https://all.api.radio-browser.info` | Radio Browser API base URL. |
-| `SELF_STATION_LIVE_SEARCH_LIMIT` | `24` | Maximum live radio search results. |
-| `SELF_STATION_RELAY_BITRATE` | `128` | Live radio relay bitrate in kbps. |
-| `SELF_STATION_FORCE_IPV4` | `1` | Prefer IPv4 DNS resolution. |
-| `SELF_STATION_NODE_PATH` | auto-detected | Node.js binary used by `yt-dlp`. |
-| `SELF_STATION_LYRICS_URL` | `https://lrclib.net` | Lyrics service base URL. |
-| `SELF_STATION_STREAM_RESOLVE_WAIT_SECONDS` | `30` | Timeout for stream URL resolution. |
+| Variable                                   |                              Default | Description                                   |
+| ------------------------------------------ | -----------------------------------: | --------------------------------------------- |
+| `SELF_STATION_HOST`                        |                            `0.0.0.0` | Bind address.                                 |
+| `SELF_STATION_PORT`                        |                               `8090` | HTTP port.                                    |
+| `SELF_STATION_DB`                          |                  `./self_station.db` | SQLite database path.                         |
+| `SELF_STATION_SEARCH_LIMIT`                |                                 `12` | Maximum YouTube search results, capped at 25. |
+| `SELF_STATION_PLAYLIST_IMPORT_LIMIT`       |                                `100` | Maximum playlist items imported per job.      |
+| `SELF_STATION_BROWSER_URL`                 | `https://all.api.radio-browser.info` | Radio Browser API base URL.                   |
+| `SELF_STATION_LIVE_SEARCH_LIMIT`           |                                 `24` | Maximum live radio search results.            |
+| `SELF_STATION_RELAY_BITRATE`               |                                `128` | Live radio relay bitrate in kbps.             |
+| `SELF_STATION_FORCE_IPV4`                  |                                  `1` | Prefer IPv4 DNS resolution.                   |
+| `SELF_STATION_NODE_PATH`                   |                        auto-detected | Node.js binary used by `yt-dlp`.              |
+| `SELF_STATION_LYRICS_URL`                  |                 `https://lrclib.net` | Lyrics service base URL.                      |
+| `SELF_STATION_STREAM_RESOLVE_WAIT_SECONDS` |                                 `30` | Timeout for stream URL resolution.            |
 
 ## API surface
 
@@ -74,6 +77,10 @@ The service is configured with environment variables. The Compose file provides 
 - `GET /api/state`
 - `GET /api/search?q=...`
 - `GET /api/radio/search?q=...`
+- `GET /api/recents?page=1&limit=12` and `GET /api/favorites?page=1&limit=12`
+- `GET /api/spotify/playlists?profile=...`
+- `GET /api/podcast/search?q=...` and `GET /api/podcast/episodes`
+- `GET /api/recommendations` and `GET /api/lastfm/context`
 - `GET /api/lyrics?title=...&artist=...`
 - `GET /api/playlist/preview?url=...`
 - `GET /api/playlist/import/{job_id}`
@@ -81,6 +88,8 @@ The service is configured with environment variables. The Compose file provides 
 - `GET /relay/radio/{queue_id}`
 - `POST /api/queue`
 - `POST /api/radio/queue`
+- `POST /api/favorites/toggle` and `POST /api/queue/clear`
+- `POST /api/podcast/queue` and `POST /api/playlist/track`
 - `POST /api/queue/remove`
 - `POST /api/queue/move`
 - `POST /api/playlist/import`

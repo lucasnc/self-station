@@ -4,7 +4,7 @@ Self Station is a compact web application:
 
 - `server.py` provides the HTTP API, static asset serving, queue state, SQLite persistence, YouTube lookup, Radio Browser lookup, lyrics lookup, and live radio relay orchestration.
 - `index.html` contains the browser UI and client-side playback logic.
-- `app.css` contains the public visual system for the UI.
+- `app.css` defines the base visual styles. `black.css`, `black.js`, and `lucide-icons.json` implement the In the Black interface. The server exposes these assets under `/in-the-black/`.
 - `compose.yml` and `Dockerfile` define the production container.
 
 ## Runtime Flow
@@ -25,6 +25,8 @@ The SQLite database stores:
 - playback state;
 - application settings such as automatic radio mode;
 - the active listening state used by lyrics and queue controls.
+
+Volume, audio presets, device name, and accent color preferences are stored in the browser. Favorites and recent playback are managed by the server.
 
 Docker deployments should mount `/data` to a persistent host path.
 

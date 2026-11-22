@@ -1,2 +1,3 @@
-# The default extra includes yt-dlp-ejs; curl-cffi improves network compatibility.
+# The nightly channel tracks YouTube changes more quickly.
+# The default extra includes yt-dlp-ejs. curl-cffi improves network compatibility.
 yt-dlp[default,curl-cffi]

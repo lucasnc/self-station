@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#080909">
   <title>Self Station</title>
   <style media="not all">
-    @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap");
 
     :root {
       color-scheme: dark;
@@ -17,7 +16,7 @@
       --text: #fff;
       --muted: #aaa;
       --accent: #fff;
-      --danger: #f0a0a0;
+      --danger: #c4c4ce;
       --radius: 0;
     }
 
@@ -28,7 +27,7 @@
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font: 15px/1.45 Ubuntu, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font: 15px/1.45 "Space Grotesk", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     button, input, select { font: inherit; }
@@ -72,7 +71,6 @@
     }
 
     .brand { display: flex; align-items: center; gap: 12px; }
-    .mark { width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px #1d1d1d; }
     h1 { margin: 0; font-size: 17px; letter-spacing: .04em; font-weight: 650; }
     .subtle, .meta { color: var(--muted); font-size: 13px; }
 
@@ -133,6 +131,11 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 14px;
+    }
+    .panel-title-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
 
     h2 { margin: 0; font-size: 14px; font-weight: 650; }
@@ -233,7 +236,7 @@
     .btn svg, .device-button svg { width: 18px; height: 18px; fill: currentColor; flex: 0 0 auto; }
 
     .volume { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-size: 13px; }
-    input[type="range"] { width: 100px; accent-color: #d7dadf; }
+     input[type="range"] { width: 100px; accent-color: #d7d7d7; }
 
     .search-form { display: flex; gap: 9px; }
     .search-input, .name-input {
@@ -286,10 +289,11 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 12px;
-      padding: 8px 0;
+      padding: 6px 0;
       border-bottom: 1px solid #1d1d1d;
     }
     .playlist-track:last-child { border-bottom: 0; }
+    .playlist-track-actions { display: flex; align-items: center; justify-content: flex-end; gap: 18px; padding-left: 8px; }
 
     .results, .queue { display: grid; gap: 8px; }
     .results { margin-top: 14px; }
@@ -299,13 +303,13 @@
       grid-template-columns: 74px minmax(0, 1fr) auto;
       gap: 12px;
       align-items: center;
-      padding: 10px;
+      padding: 8px;
       border-radius: 0;
       background: var(--panel-2);
       border: 1px solid transparent;
     }
 
-    .result img { width: 74px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; background: #101214; }
+    .result img { width: 74px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; background: #101012; }
     .radio-results .result img { aspect-ratio: 1; object-fit: contain; padding: 5px; }
     .radio-view { width: min(820px, 100%); }
     .radio-intro { margin: -4px 0 14px; color: var(--muted); font-size: 13px; }
@@ -314,6 +318,10 @@
     .item-meta { color: var(--muted); font-size: 12px; }
     .queue-index { color: var(--muted); font-variant-numeric: tabular-nums; }
     .queue-item { grid-template-columns: 28px minmax(0, 1fr) auto; }
+
+    /* Compact rhythm for the Queue/Recents tab lists. */
+    .queue { gap: 6px; }
+    .queue-item { padding-block: 6px; }
 
     .radio-option {
       display: flex;
@@ -328,7 +336,7 @@
     .radio-copy strong { display: block; font-size: 13px; font-weight: 600; }
     .radio-copy small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
 
-    .ranking { display: grid; gap: 8px; }
+    .ranking { display: grid; gap: 6px; }
     .rank-item {
       display: grid;
       grid-template-columns: 52px minmax(0, 1fr);
@@ -340,6 +348,7 @@
       border: 1px solid transparent;
     }
     .rank-cover { width: 52px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; background: #050505; }
+    .rank-item { padding-block: 5px; }
 
     .empty {
       padding: 26px 12px;
@@ -358,9 +367,9 @@
       font-size: 12px;
     }
 
-    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #697078; }
-    .sync-dot.ok { background: #aab5aa; }
-    .sync-dot.warn { background: #c4aa80; }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #707078; }
+    .sync-dot.ok { background: #b1b1b8; }
+    .sync-dot.warn { background: #a6a6b0; }
     .error { color: var(--danger); }
 
     .audio-gate {
@@ -383,7 +392,7 @@
       color: var(--text);
       background: var(--panel);
     }
-    dialog::backdrop { background: #050607c7; }
+    dialog::backdrop { background: #050505c7; }
     .dialog-body { padding: 20px; }
     .dialog-body h2 { font-size: 18px; margin-bottom: 7px; }
     .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
@@ -410,49 +419,37 @@
       .result .btn { padding-inline: 10px; }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .cover-disc { animation-duration: 30s; }
-    }
   </style>
-  <link rel="stylesheet" href="/app.css">
-</head>
+  <link rel="stylesheet" href="/in-the-black/app.css?v=space-grotesk-buttons">
+<link rel="stylesheet" href="/in-the-black/black.css?v=intensity-title-case"></head>
 <body data-theme="midnight">
+  <!-- impeccable-disable flat-type-hierarchy, layout-transition -- inert legacy inline stylesheet remains for cached clients; active UI system lives in app.css -->
+  <!--
+    THESIS: a collaborative jukebox as a patchbay console: the room routes the next track together, refusing a generic streaming dashboard.
+    OWN-WORLD: studio black, restrained grayscale, and mono markers for time, state, and connection.
+    STORY: see what is playing, understand what comes next, and inject music or radio into the shared flow.
+    FIRST VIEWPORT: now playing owns the primary column; search follows; queue and recent form the side rack; adding is the primary action.
+    FORM: patchbay console direction with a full-width now-playing rail, seed b0c9b68a.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+  -->
   <div id="pageBackdrop" class="page-backdrop" aria-hidden="true"></div>
   <div class="page-shade" aria-hidden="true"></div>
   <audio id="player" preload="metadata" playsinline></audio>
 
   <div class="shell">
-    <header class="masthead">
-      <div class="brand">
-        <span class="mark"></span>
-        <div>
-          <h1>Self Station</h1>
-          <div class="subtle" id="connectionText">connecting to server</div>
-        </div>
-      </div>
-      <button class="device-button" id="deviceButton" type="button" title="Change device name">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v1ZM8 17H6v-2h2v2Zm9.7-8.3-2.4 2.4-2.4-2.4 2.4-2.4L17.7 8.7ZM21.4 5 19 7.4 16.6 5 19 2.6 21.4 5Z"/></svg>
-        <span id="deviceLabel">Device</span>
-      </button>
-    </header>
-
     <main id="jukeboxView" class="grid view">
       <div class="stack flow-column">
         <section class="panel panel--now">
-          <div class="panel-title">
-            <h2>Now playing</h2>
-            <span class="meta" id="playbackState">stopped</span>
-          </div>
           <div id="nowEmpty" class="empty">The queue is empty.</div>
           <div id="nowContent" hidden>
             <div class="now">
               <div id="nowDisc" class="now-artwork" aria-hidden="true">
-                <img id="nowCover" class="cover-disc" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%230b0d0d'/%3E%3Ccircle cx='60' cy='60' r='34' fill='none' stroke='%23354039' stroke-width='3'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%23ddff52'/%3E%3C/svg%3E" alt="">
+                <img id="nowCover" class="cover-disc" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23080909'/%3E%3Ccircle cx='60' cy='60' r='34' fill='none' stroke='%232d3032' stroke-width='3'/%3E%3Ccircle cx='60' cy='60' r='5' fill='%23f4f4f1'/%3E%3C/svg%3E" alt="">
               </div>
               <div>
                 <h3 id="nowTitle" class="track-title"></h3>
                 <div id="nowUploader" class="meta"></div>
-                <div id="nowAdded" class="meta"></div>
+                <div id="nowAdded" hidden></div>
               </div>
             </div>
             <div class="progress"><span id="progressBar"></span></div>
@@ -465,15 +462,33 @@
             <button class="btn icon" id="skipButton" type="button" aria-label="Skip" title="Skip">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7L5 5Zm11 0h3v14h-3V5Z"/></svg>
             </button>
+            <button class="btn icon" id="requeueCurrentButton" type="button" aria-label="Add current track to queue" title="Add current track to queue" disabled></button>
+            <button class="btn icon favorite-button" id="favoriteButton" type="button" aria-label="Favorite" aria-pressed="false" title="Favorite">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>
+            </button>
             <button class="btn icon lyrics-toggle" id="lyricsToggle" type="button" aria-label="Show lyrics" title="Show lyrics" aria-expanded="false" aria-controls="lyricsPanel" disabled>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.5a3.5 3.5 0 1 1-2-3.16V7.55l8-2V14a3.5 3.5 0 1 1-2-3.16V8.18l-4 1V14a3.5 3.5 0 1 1-2-3.16V4h2Zm-5.5 9.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"/></svg>
+            </button>
+            <button class="btn icon wiki-toggle" id="wikiToggle" type="button" aria-label="Show track context" title="Show track context" aria-expanded="false" aria-controls="contextPanel" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="btn icon download-toggle" id="downloadToggle" type="button" aria-label="Download current audio" title="Download current audio" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="btn icon" id="openTrackButton" type="button" aria-label="Open track URL" title="Open track URL" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
             <button id="autoRadioToggle" class="btn icon" type="button" aria-label="Enable automatic radio" aria-pressed="false" title="Enable automatic radio">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h2v12H4V6Zm4 3h2v6H8V9Zm4-5h2v16h-2V4Zm4 3h2v10h-2V7Zm4 3h2v4h-2v-4Z"/></svg>
             </button>
+            <button id="audioGate" class="btn icon audio-gate" type="button" aria-label="Enable audio in this browser" title="Enable audio in this browser">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-9v2.1a7 7 0 0 1 0 13.8V21a9 9 0 0 0 0-18Z"/></svg>
+            </button>
             <div class="volume">
-              <span>Local volume</span>
-              <input id="volume" type="range" min="0" max="100" value="80" aria-label="Local volume">
+              <div id="volumeRangeWrap" class="volume-range-wrap">
+                <output id="volumeValue" class="volume-value" for="volume" aria-hidden="true">80%</output>
+                <input id="volume" type="range" min="0" max="100" step="1" value="80" aria-label="Local volume">
+              </div>
             </div>
           </div>
           <div class="sync-line"><span id="syncDot" class="sync-dot"></span><span id="syncText">waiting for audio</span></div>
@@ -485,21 +500,43 @@
             <div id="lyricsStatus" class="lyrics-status">Loading lyrics…</div>
             <pre id="lyricsText" class="lyrics-text"></pre>
           </section>
+          <section id="contextPanel" class="lyrics-panel context-panel" hidden aria-live="polite">
+            <div class="lyrics-heading">
+              <h3>Wiki & context</h3>
+              <a id="contextSource" class="meta" href="#" target="_blank" rel="noreferrer noopener">Last.fm</a>
+            </div>
+            <div id="contextStatus" class="lyrics-status">Loading track context…</div>
+            <p id="contextText" class="context-text"></p>
+          </section>
+          <section id="recognitionPanel" class="lyrics-panel context-panel" hidden aria-live="polite">
+            <div class="lyrics-heading">
+              <h3>Radio recognition</h3>
+              <a id="recognitionSource" class="meta" href="https://acoustid.org/" target="_blank" rel="noreferrer noopener">AcoustID</a>
+            </div>
+            <div id="recognitionStatus" class="lyrics-status">Waiting for recognition…</div>
+            <p id="recognitionText" class="context-text"></p>
+          </section>
         </section>
 
-        <section class="panel panel--search">
-          <div class="panel-title">
-            <h2>Add to the flow</h2>
+        <section class="panel panel--search panel--flow">
+          <div class="flow-tabs" role="tablist" aria-label="Shared flow">
+            <button class="flow-tab active" type="button" role="tab" aria-selected="true" aria-controls="flowAddPane" data-flow-tab="add">Search</button>
+            <button class="flow-tab" type="button" role="tab" aria-selected="false" aria-controls="flowQueuePane" data-flow-tab="queue">Queue <span class="queue-tab-count">0</span></button>
+            <button class="flow-tab" type="button" role="tab" aria-selected="false" aria-controls="flowRecentPane" data-flow-tab="recent">Recents</button>
+            <button class="flow-tab" type="button" role="tab" aria-selected="false" aria-controls="flowFavoritesPane" data-flow-tab="favorites">Favorites</button>
+            <button class="flow-tab" type="button" role="tab" aria-selected="false" aria-controls="flowDiscoverPane" data-flow-tab="discover">Playlists</button>
+            <button id="deviceTab" class="flow-tab device-tab" type="button" role="tab" aria-selected="false" aria-controls="flowDevicePane" data-flow-tab="device">Device <span class="device-tab-count">0</span></button>
           </div>
-          <p class="panel-intro">Search music, playlists, or live radio. Anything you add enters the shared flow for every connected device.</p>
+          <section id="flowAddPane" class="flow-pane" role="tabpanel">
+          <div class="panel-title">
+            <h2>Search</h2>
+          </div>
+          <div class="black-search-toolbar">
           <div class="search-mode-row">
-            <div class="search-mode-copy">
-              <span class="search-mode-label">searching</span>
-              <strong id="searchModeTitle">music and playlists</strong>
-            </div>
             <div class="search-modes" role="group" aria-label="Search type">
               <button id="musicSearchMode" class="search-mode-button active" type="button" data-search-mode="music" aria-pressed="true">Music</button>
               <button id="radioSearchMode" class="search-mode-button" type="button" data-search-mode="radio" aria-pressed="false">Radio</button>
+              <button id="podcastSearchMode" class="search-mode-button" type="button" data-search-mode="podcast" aria-pressed="false">Podcast</button>
             </div>
           </div>
           <form id="searchForm" class="search-form">
@@ -508,29 +545,135 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.7 19.3-4.2-4.2a7 7 0 1 0-1.4 1.4l4.2 4.2 1.4-1.4ZM5 11a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/></svg>
             </button>
           </form>
+          </div>
           <div id="searchStatus" class="sync-line"></div>
+          <section id="musicRecommendations" class="music-recommendations" hidden aria-live="polite">
+            <p class="panel-intro">Related to now playing <span id="recommendationSeedLabel" class="meta"></span></p>
+            <div id="recommendationStatus" class="sync-line"></div>
+            <div id="recommendationResults" class="results"></div>
+          </section>
           <div id="playlistPreview" class="playlist-preview" hidden></div>
           <div id="results" class="results"></div>
+          <div id="searchSentinel" class="infinite-scroll-sentinel" hidden aria-live="polite"></div>
           <div id="radioResults" class="results radio-results" hidden></div>
-        </section>
-      </div>
-
-      <div class="stack queue-panel">
-        <section class="panel panel--queue">
+          <div id="podcastResults" class="results podcast-results" hidden></div>
+          </section>
+          <section id="flowQueuePane" class="flow-pane" role="tabpanel" hidden>
           <div class="panel-title">
             <h2>Queue</h2>
-            <span id="queueCount" class="meta">0 tracks</span>
           </div>
-          <p class="panel-intro">The next track in the room appears here for everyone.</p>
-          <div id="queue" class="queue"><div class="empty">Nothing is waiting.</div></div>
-        </section>
-
-        <section class="panel panel--recent">
+          <div class="queue-intro-row">
+            <p class="panel-intro">The next track in the room appears here for everyone.</p>
+            <div class="queue-intro-actions">
+              <span id="queueCount" class="meta">0 tracks</span>
+              <button id="clearQueueButton" class="btn primary icon" type="button" aria-label="Clear queue" title="Clear queue" disabled></button>
+            </div>
+          </div>
+          <div id="queue" class="queue"><div class="empty list-empty-message">Nothing is waiting.</div></div>
+          </section>
+          <section id="flowRecentPane" class="flow-pane" role="tabpanel" hidden>
           <div class="panel-title">
-            <h2>Recent</h2>
+            <h2>Recents</h2>
           </div>
-          <div id="recentTracks" class="ranking"><div class="empty">No recent playback.</div></div>
-        </section>
+          <p class="panel-intro">Tracks played most recently by the room.</p>
+          <div id="recentTracks" class="ranking"><div class="empty list-empty-message">No recent playback.</div></div>
+          <div id="recentSentinel" class="infinite-scroll-sentinel" aria-live="polite"></div>
+          </section>
+          <section id="flowFavoritesPane" class="flow-pane" role="tabpanel" hidden>
+          <div class="panel-title">
+            <h2>Favorites</h2>
+          </div>
+          <p class="panel-intro">Your saved tracks, ready to return to the flow.</p>
+          <div id="favoriteTracks" class="ranking"><div class="empty list-empty-message">No favorites yet.</div></div>
+          <div id="favoriteSentinel" class="infinite-scroll-sentinel" aria-live="polite"></div>
+          </section>
+          <section id="flowDiscoverPane" class="flow-pane" role="tabpanel" hidden>
+            <section class="black-playlist-section" aria-labelledby="publicPlaylistsTitle">
+              <header class="discover-section-heading">
+                <div>
+                  <h2 id="publicPlaylistsTitle">Public playlists</h2>
+                  <span id="discoverStatus" class="meta" aria-live="polite"></span>
+                </div>
+                <button id="discoverRefresh" class="btn primary icon" type="button" aria-label="Reload playlists" title="Reload playlists">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.7 9H3.2A9 9 0 1 0 5 6.7V3H8.5V5.7A9 9 0 0 1 12 5Z"/></svg>
+                </button>
+              </header>
+              <div id="discoverTracks" class="ranking"></div>
+              <div id="discoverSentinel" class="infinite-scroll-sentinel" aria-live="polite"></div>
+            </section>
+            <section class="black-playlist-section" aria-labelledby="editorialPlaylistsTitle">
+              <header class="discover-section-heading">
+                <h2 id="editorialPlaylistsTitle">Editorial playlists</h2>
+              </header>
+              <div id="fixedDiscoverTracks" class="ranking"></div>
+            </section>
+          </section>
+          <section id="flowDevicePane" class="flow-pane device-pane" role="tabpanel" hidden>
+            <div class="device-pane-content">
+              <div class="audio-mode-control">
+                <label class="device-section-label" for="audioMode">Audio mode</label>
+                <div class="audio-mode-select-wrap">
+                  <select id="audioMode" class="name-input" aria-describedby="audioModeHint">
+                    <option value="original">Original</option>
+                    <option value="8d">8D · HRTF</option>
+                    <option value="flat">Flat</option>
+                    <option value="bass">Bass Boost</option>
+                    <option value="treble">Treble</option>
+                    <option value="rock">Rock</option>
+                    <option value="electronic">Electronic</option>
+                    <option value="podcast">Podcast</option>
+                    <option value="night">Night</option>
+                  </select>
+                </div>
+                <div class="audio-mode-intensity">
+                  <span class="black-intensity-heading" aria-hidden="true">Intensity</span>
+                  <select id="audioIntensity" class="name-input" aria-label="Intensity" aria-describedby="audioModeHint">
+                    <option value="light">Light</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="strong">Strong</option>
+                  </select>
+                </div>
+                <span id="audioModeHint" class="panel-intro">Applied only in this browser.</span>
+              </div>
+              <div class="black-device-profile">
+              <h2>Browser settings</h2>
+              <div class="device-field-group">
+                <label class="device-section-label" for="deviceInlineInput">Device name</label>
+                <form id="deviceInlineForm" class="device-inline-form">
+                  <input id="deviceInlineInput" class="name-input" maxlength="40" required aria-label="Device name">
+                  <button class="btn primary icon device-save" type="submit" aria-label="Save device name" title="Save device name">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </form>
+                <p class="panel-intro device-name-hint">This name appears on tracks added from this browser.</p>
+              </div>
+              <div class="device-field-group">
+                <label class="device-section-label" for="spotifyProfileInput">Spotify profile</label>
+                <form id="spotifyProfileForm" class="device-inline-form">
+                  <input id="spotifyProfileInput" class="name-input" maxlength="120" placeholder="Spotify profile ID or URL" aria-label="Spotify profile ID or URL">
+                  <button class="btn primary icon device-save" type="submit" aria-label="Save Spotify profile" title="Save Spotify profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </form>
+                <p class="panel-intro device-name-hint">Used to load public playlists in Discover.</p>
+              </div>
+              <div id="deviceInlineStatus" class="sync-line" aria-live="polite"></div>
+              </div>
+              <fieldset class="black-accent-settings">
+                <legend>Accent color</legend>
+                <div class="black-accent-row">
+                  <div class="black-radio-picker">
+                    <label><input type="radio" name="accentMode" value="dynamic" checked><span>From track</span></label>
+                    <label><input type="radio" name="accentMode" value="fixed"><span>Fixed</span></label>
+                  </div>
+                  <input id="fixedAccentColor" type="color" value="#c6b9df" aria-label="Fixed accent color">
+                </div>
+              </fieldset>
+            </div>
+            <section class="black-device-connected" aria-labelledby="connectedDevicesTitle">
+              <div class="panel-title"><h2 id="connectedDevicesTitle">Connected devices</h2></div>
+              <div id="deviceClients" class="device-clients" aria-live="polite"></div>
+            </section>
+          </section>
+          </section>
       </div>
     </main>
 
@@ -538,9 +681,9 @@
       <section class="panel panel--radio">
         <div class="panel-title">
           <h2>Search live radio</h2>
-          <span class="meta">relay through Self Station</span>
+          <span class="meta">relayed locally</span>
         </div>
-        <p class="radio-intro">Search for a station by name. When added, Self Station receives the stream once and relays it to connected browsers.</p>
+        <p class="radio-intro">Search for a station by name. When added, the server receives one stream and distributes it to connected browsers.</p>
         <form id="radioSearchForm" class="search-form">
           <input id="radioSearchInput" class="search-input" type="search" minlength="2" maxlength="100" placeholder="Radio station name" autocomplete="off" required>
           <button id="radioSearchButton" class="btn primary icon" type="submit" aria-label="Search radio" title="Search radio">
@@ -553,49 +696,88 @@
     </main>
   </div>
 
-  <button id="audioGate" class="btn primary audio-gate" type="button">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-9v2.1a7 7 0 0 1 0 13.8V21a9 9 0 0 0 0-18Z"/></svg>
-    Enable audio in this browser
-  </button>
-
-  <dialog id="deviceDialog">
-    <form id="deviceForm" class="dialog-body" method="dialog">
-        <h2>This device name</h2>
-        <p class="meta">This name appears on tracks added from this browser.</p>
-      <input id="deviceInput" class="name-input" maxlength="40" required>
-      <div class="dialog-actions">
-        <button id="cancelDevice" class="btn icon" type="button" aria-label="Cancel" title="Cancel">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4 6.4 5Z"/></svg>
-        </button>
-        <button class="btn primary icon" value="save" type="submit" aria-label="Save" title="Save">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.2 16.2-4.4-4.4-1.4 1.4L9.2 19 21 7.2l-1.4-1.4-10.4 10.4Z"/></svg>
-        </button>
-      </div>
-    </form>
-  </dialog>
-
   <script>
     const $ = (selector) => document.querySelector(selector);
+    const LOADING_COPY = /\b(load|loading|searching|reading|refreshing|preparing|processing|retrying|queued|connecting|importing)\b/i;
+    const loadingStatusSelectors = ["#searchStatus", "#recommendationStatus", "#discoverStatus", "#radioSearchStatus", "#playlistImportStatus", "#discoverSentinel", "#searchSentinel", "#favoriteSentinel", "#lyricsStatus", "#contextStatus", "#syncText"];
+    function syncLoadingCopy(node) {
+      if (!node) return;
+      node.classList.toggle("is-loading-copy", LOADING_COPY.test(node.textContent || ""));
+    }
+    loadingStatusSelectors.forEach((selector) => {
+      const node = $(selector);
+      if (!node) return;
+      const observer = new MutationObserver(() => syncLoadingCopy(node));
+      observer.observe(node, { childList: true, characterData: true, subtree: true });
+      syncLoadingCopy(node);
+    });
     const player = $("#player");
     const audioGate = $("#audioGate");
-    const deviceDialog = $("#deviceDialog");
-    const RADIO_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23090909'/%3E%3Cpath d='M25 42h70v48H25zM34 51v30h52V51zm7 7h38v4H41zm0 10h25v4H41zM60 23l6 5-21 14-4-6z' fill='%23888888'/%3E%3C/svg%3E";
-    const ICONS = {
-      play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l12-8L7 4Z"/></svg>',
-      pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5Zm8 0h4v14h-4V5Z"/></svg>',
-      add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/></svg>',
-      check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.2 16.2-4.4-4.4-1.4 1.4L9.2 19 21 7.2l-1.4-1.4-10.4 10.4Z"/></svg>',
-      playlist: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h11v2H4V5Zm0 6h11v2H4v-2Zm0 6h7v2H4v-2Zm14-3v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3Z"/></svg>',
-      remove: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4V2h8v2h5v2H3V4h5Zm-2 4h12l-1 14H7L6 8Zm3 2 .6 10h1.5l-.4-10H9Zm4.3 0-.4 10h1.5l.6-10h-1.7Z"/></svg>',
-      retry: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.7 9H3.2A9 9 0 1 0 5 6.7V3H3v7h7V8H6.5A7 7 0 0 1 12 5Z"/></svg>',
-      moveUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 7-1.4 1.4L13 7.8V20h-2V7.8l-4.6 4.6L5 11l7-7Z"/></svg>',
-      moveDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 20-7-7 1.4-1.4 4.6 4.6V4h2v12.2l4.6-4.6L19 13l-7 7Z"/></svg>'
+    const audioModeSelect = $("#audioMode");
+    const audioIntensitySelect = $("#audioIntensity");
+    const AUDIO_MODES = {
+      original: { label: "Original", description: "No equalization or volume processing.", bass: 0, treble: 0, gain: 0 },
+      flat: { label: "Flat", description: "Balanced response that keeps the original mix.", bass: 0, treble: 0, gain: 0 },
+      bass: { label: "Bass Boost", description: "Enhances low frequencies without changing the source.", bass: 6, treble: 0, gain: -1 },
+      treble: { label: "Treble", description: "Brings out detail and high frequencies.", bass: 0, treble: 5, gain: -1 },
+      rock: { label: "Rock", description: "Adds presence to both bass and treble.", bass: 4, treble: 3, gain: -1 },
+      electronic: { label: "Electronic", description: "Emphasizes bass and high frequencies.", bass: 5, treble: 5, gain: -2 },
+      podcast: { label: "Podcast", description: "Prioritizes voice clarity and intelligibility.", bass: -2, treble: 4, gain: -1 },
+      night: { label: "Night", description: "Reduces bass and gain for late-night listening.", bass: -4, treble: -3, gain: -2 },
+      "8d": { label: "8D · HRTF", description: "Slow binaural movement around the listener.", bass: 0, treble: 0, gain: 0 },
     };
+    const AUDIO_INTENSITIES = { light: .5, medium: 1, strong: 1.35 };
+    let audioContext = null;
+    let audioSource = null;
+    let audioBassFilter = null;
+    let audioTrebleFilter = null;
+    let audioGain = null;
+    let audioPanner = null;
+    let audioOrbitFrame = 0;
+    let audioOrbitStartedAt = 0;
+    let audioOrbitRadius = 1.1;
+    let audioSpatialEnabled = false;
+    const DEFAULT_ARTWORK = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20240%20240%22%3E%0A%3Cdefs%3E%3CradialGradient%20id%3D%22bg%22%3E%3Cstop%20stop-color%3D%22%23303035%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23111113%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%0A%3Cpath%20fill%3D%22url%28%23bg%29%22%20d%3D%22M0%200h240v240H0z%22%2F%3E%0A%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2282%22%20fill%3D%22%23111114%22%20stroke%3D%22%23616167%22%20stroke-width%3D%222%22%2F%3E%0A%3Cg%20fill%3D%22none%22%20stroke%3D%22%23424247%22%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2272%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2263%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2254%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2245%22%2F%3E%3C%2Fg%3E%0A%3Cpath%20d%3D%22M65%2083a66%2066%200%200%201%2037-23m36%20120a66%2066%200%200%200%2037-23%22%20fill%3D%22none%22%20stroke%3D%22%23adadb2%22%20stroke-opacity%3D%22.6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%2228%22%20fill%3D%22%23d1d1d4%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%22120%22%20r%3D%225%22%20fill%3D%22%23232325%22%2F%3E%0A%3C%2Fsvg%3E";
+    // Lucide icons kept inline: no runtime CDN dependency, consistent stroke
+    // language, and the same icon source for static and generated controls.
+    const lucide = (content) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${content}</svg>`;
+    const ICONS = {
+      play: lucide('<polygon points="6 3 20 12 6 21 6 3"></polygon>'),
+      pause: lucide('<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>'),
+      add: lucide('<path d="M4 6h10"></path><path d="M4 12h7"></path><path d="M4 18h7"></path><path d="M17 13v8"></path><path d="M13 17h8"></path>'),
+      devices: lucide('<rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 18v3"></path>'),
+      check: lucide('<path d="m5 12 4 4L19 6"></path>'),
+      playlist: lucide('<path d="M4 5h11"></path><path d="M4 9h11"></path><path d="M4 13h7"></path><path d="M18 11v8"></path><path d="M14 15h8"></path>'),
+      remove: lucide('<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v5"></path><path d="M14 11v5"></path>'),
+      favorite: lucide('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>'),
+      chevron: lucide('<path d="m9 18 6-6-6-6"></path>'),
+      retry: lucide('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path>'),
+      moveUp: lucide('<path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path>'),
+      moveDown: lucide('<path d="m12 5 7 7-7 7"></path><path d="M5 12h14"></path>')
+    };
+
+    const STATIC_ICONS = {
+      playPauseButton: ICONS.pause,
+      skipButton: lucide('<polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line>'),
+      favoriteButton: ICONS.favorite,
+      lyricsToggle: lucide('<circle cx="8" cy="18" r="3"></circle><path d="M12 18V2l7 4"></path>'),
+      wikiToggle: lucide('<circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>'),
+      downloadToggle: lucide('<path d="M12 3v11"></path><path d="m8 10 4 4 4-4"></path><path d="M5 20h14"></path>'),
+      clearQueueButton: ICONS.remove,
+      recognizeToggle: lucide('<circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path><path d="M11 8v6"></path><path d="M8.5 10v2"></path><path d="M13.5 10v2"></path>'),
+      autoRadioToggle: lucide('<path d="M2 10v4"></path><path d="M6 6v12"></path><path d="M10 3v18"></path><path d="M14 6v12"></path><path d="M18 10v4"></path>'),
+      audioGate: lucide('<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>'),
+      searchButton: lucide('<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'),
+      radioSearchButton: lucide('<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'),
+      discoverRefresh: ICONS.retry
+    };
+    Object.entries(STATIC_ICONS).forEach(([id, icon]) => { if ($("#" + id)) $("#" + id).innerHTML = icon; });
     const clientId = localStorage.getItem("selfStationClientId") || localStorage.getItem("jukeboxClientId") ||
       (crypto.randomUUID ? crypto.randomUUID() : `client-${Date.now()}-${Math.random().toString(16).slice(2)}`);
     localStorage.setItem("selfStationClientId", clientId);
 
     let deviceName = localStorage.getItem("selfStationDeviceName") || localStorage.getItem("jukeboxDeviceName") || "";
+    let spotifyProfileId = localStorage.getItem("selfStationSpotifyProfile") || "";
     let serverOffsetMs = 0;
     let offsetReady = false;
     let lastState = null;
@@ -610,8 +792,195 @@
     let playlistPreviewData = null;
     let playlistPollTimer = null;
     let searchMode = "music";
+    let searchRequestId = 0;
+    let recommendationTrackKey = "";
+    let recommendationRequestId = 0;
+    let recommendationItems = [];
+    let recommendationMessage = "";
     let lyricsTrackKey = "";
     let lyricsRequestId = 0;
+    let contextTrackKey = "";
+    let contextRequestId = 0;
+    let discoverPage = 0;
+    let discoverLoading = false;
+    let discoverKey = "";
+    let queueRenderKey = "";
+    const pagedListRevisions = { recent: "", favorites: "" };
+    let recognitionTrackKey = "";
+    let recognitionRequestId = 0;
+    let recognizeCooldownTimer = null;
+    const PAGED_LIST_LIMIT = 25;
+    const pagedLists = {
+      recent: { items: [], page: 0, loading: false, hasMore: true, initialized: false },
+      favorites: { items: [], page: 0, loading: false, hasMore: true, initialized: false },
+      discover: { items: [], page: 0, loading: false, hasMore: true, initialized: false },
+      search: { items: [], page: 0, loading: false, hasMore: false, initialized: false, query: "" }
+    };
+    const FIXED_DISCOVER_PLAYLISTS = [
+      { title: "Top 50 Global", source: "Spotify", url: "https://open.spotify.com/playlist/37i9dQZEVXbMDoHDwVN2tF" },
+      { title: "Today's Top Hits", source: "Spotify", url: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M" },
+      { title: "New Music Friday", source: "Spotify", url: "https://open.spotify.com/playlist/37i9dQZF1DX4JAvHpjipBk" },
+      { title: "Viral Hits", source: "Spotify", url: "https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq" },
+      { title: "Top Music", source: "YouTube Music", url: "https://music.youtube.com/playlist?list=PL4fGSI1pDJn5kI81J1fYWK5eZRl1zJ5kM" },
+      { title: "Trending Music", source: "YouTube Music", url: "https://music.youtube.com/playlist?list=PL4fGSI1pDJn6t3TXLGiiJdD-sZbrG3tG0" },
+    ];
+
+    function setAudioModeHint(message) {
+      const hint = $("#audioModeHint");
+      if (hint) hint.textContent = message;
+    }
+
+    function updateAudioOrbit(timestamp) {
+      if (!audioSpatialEnabled || !audioPanner || !audioContext || audioContext.state !== "running") {
+        audioOrbitFrame = 0;
+        return;
+      }
+      const angle = ((timestamp - audioOrbitStartedAt) / 18000) * Math.PI * 2;
+      const now = audioContext.currentTime;
+      const x = Math.sin(angle) * audioOrbitRadius;
+      const y = Math.sin(angle * 2) * .12;
+      const z = -Math.cos(angle) * audioOrbitRadius;
+      if (audioPanner.positionX && audioPanner.positionY && audioPanner.positionZ) {
+        audioPanner.positionX.setTargetAtTime(x, now, .04);
+        audioPanner.positionY.setTargetAtTime(y, now, .04);
+        audioPanner.positionZ.setTargetAtTime(z, now, .04);
+      } else {
+        audioPanner.setPosition(x, y, z);
+      }
+      audioOrbitFrame = requestAnimationFrame(updateAudioOrbit);
+    }
+
+    function startAudioOrbitAnimation() {
+      if (!audioSpatialEnabled || !audioContext || audioContext.state !== "running" || audioOrbitFrame) return;
+      audioOrbitStartedAt = performance.now();
+      audioOrbitFrame = requestAnimationFrame(updateAudioOrbit);
+    }
+
+    function setHrtfOrbit(enabled, intensity = 1) {
+      if (!audioGain || !audioContext) return false;
+      if (enabled) {
+        if (!audioPanner) return false;
+        audioOrbitRadius = .65 + (.45 * intensity);
+        if (audioSpatialEnabled) return true;
+        try {
+          audioGain.disconnect();
+          audioPanner.connect(audioContext.destination);
+          audioGain.connect(audioPanner);
+          audioSpatialEnabled = true;
+          startAudioOrbitAnimation();
+          return true;
+        } catch (_error) {
+          audioPanner.disconnect();
+          audioGain.disconnect();
+          audioGain.connect(audioContext.destination);
+          audioSpatialEnabled = false;
+          return false;
+        }
+      }
+      if (audioSpatialEnabled) {
+        audioSpatialEnabled = false;
+        if (audioOrbitFrame) cancelAnimationFrame(audioOrbitFrame);
+        audioOrbitFrame = 0;
+        audioPanner.disconnect();
+        audioGain.disconnect();
+        audioGain.connect(audioContext.destination);
+      }
+      return true;
+    }
+
+    function setAudioFilters(mode) {
+      const profile = AUDIO_MODES[mode] || AUDIO_MODES.original;
+      const intensity = AUDIO_INTENSITIES[audioIntensitySelect?.value] || 1;
+      setAudioModeHint(`${profile.description || "Local processing."} Only in this browser.`);
+      if (!audioBassFilter || !audioTrebleFilter || !audioGain) return;
+      audioBassFilter.gain.setTargetAtTime(profile.bass * intensity, audioContext.currentTime, .025);
+      audioTrebleFilter.gain.setTargetAtTime(profile.treble * intensity, audioContext.currentTime, .025);
+      audioGain.gain.setTargetAtTime(Math.pow(10, (profile.gain * intensity) / 20), audioContext.currentTime, .025);
+      if (mode === "8d") {
+        if (!setHrtfOrbit(true, intensity)) {
+          setAudioModeHint("HRTF is unavailable in this browser; playback remains in the original stereo path.");
+        }
+      } else {
+        setHrtfOrbit(false);
+      }
+    }
+
+    function ensureAudioGraph() {
+      if (audioSource) return true;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        setAudioModeHint("Audio modes are unavailable in this browser.");
+        return false;
+      }
+      try {
+        audioContext = new AudioContextClass();
+        audioSource = audioContext.createMediaElementSource(player);
+        audioBassFilter = audioContext.createBiquadFilter();
+        audioBassFilter.type = "lowshelf";
+        audioBassFilter.frequency.value = 180;
+        audioTrebleFilter = audioContext.createBiquadFilter();
+        audioTrebleFilter.type = "highshelf";
+        audioTrebleFilter.frequency.value = 3200;
+        audioGain = audioContext.createGain();
+        try {
+          audioPanner = audioContext.createPanner();
+          audioPanner.panningModel = "HRTF";
+          audioPanner.distanceModel = "inverse";
+          audioPanner.refDistance = 1;
+          audioPanner.rolloffFactor = 0;
+          audioPanner.maxDistance = 10000;
+        } catch (_error) {
+          audioPanner = null;
+        }
+        audioSource.connect(audioBassFilter);
+        audioBassFilter.connect(audioTrebleFilter);
+        audioTrebleFilter.connect(audioGain);
+        audioGain.connect(audioContext.destination);
+        setAudioFilters(audioModeSelect.value);
+        return true;
+      } catch (_error) {
+        audioContext = null;
+        audioSource = null;
+        audioBassFilter = null;
+        audioTrebleFilter = null;
+        audioGain = null;
+        setAudioModeHint("Audio modes are unavailable in this browser.");
+        return false;
+      }
+    }
+
+    async function resumeAudioGraph() {
+      if (!ensureAudioGraph() || !audioContext) return;
+      try {
+        if (audioContext.state === "suspended") await audioContext.resume();
+        startAudioOrbitAnimation();
+      } catch (_error) {
+        // The audio permission control remains available for another gesture.
+      }
+    }
+
+    const savedAudioMode = localStorage.getItem("selfStationAudioMode");
+    const savedAudioIntensity = localStorage.getItem("selfStationAudioIntensity");
+    audioModeSelect.value = savedAudioMode && AUDIO_MODES[savedAudioMode] ? savedAudioMode : "original";
+    if (savedAudioIntensity && AUDIO_INTENSITIES[savedAudioIntensity]) audioIntensitySelect.value = savedAudioIntensity;
+    audioModeSelect.addEventListener("change", async (event) => {
+      const mode = AUDIO_MODES[event.target.value] ? event.target.value : "original";
+      event.target.value = mode;
+      localStorage.setItem("selfStationAudioMode", mode);
+      if (ensureAudioGraph()) {
+        setAudioFilters(mode);
+        await resumeAudioGraph();
+      }
+    });
+    audioIntensitySelect.addEventListener("change", async (event) => {
+      const intensity = AUDIO_INTENSITIES[event.target.value] ? event.target.value : "medium";
+      event.target.value = intensity;
+      localStorage.setItem("selfStationAudioIntensity", intensity);
+      if (ensureAudioGraph()) {
+        setAudioFilters(audioModeSelect.value);
+        await resumeAudioGraph();
+      }
+    });
 
     function suggestedDeviceName() {
       const ua = navigator.userAgent;
@@ -623,15 +992,16 @@
       return `${kind}-${clientId.slice(0, 4).toUpperCase()}`;
     }
 
-    function openDeviceDialog(firstUse = false) {
-      $("#deviceInput").value = deviceName || suggestedDeviceName();
-      $("#cancelDevice").hidden = firstUse;
-      deviceDialog.showModal();
-      setTimeout(() => $("#deviceInput").select(), 50);
+    function openDevicePane(firstUse = false) {
+      $("#deviceInlineInput").value = deviceName || suggestedDeviceName();
+      $("#spotifyProfileInput").value = spotifyProfileId;
+      setFlowTab("device");
+      $("#deviceInlineStatus").textContent = firstUse ? "Choose a name for this browser." : "";
+      setTimeout(() => $("#deviceInlineInput").select(), 50);
     }
 
     function updateDeviceLabel() {
-      $("#deviceLabel").textContent = deviceName || "Set device";
+      $("#deviceInlineInput").value = deviceName || suggestedDeviceName();
     }
 
     function selectView() {
@@ -643,23 +1013,39 @@
     }
 
     function setSearchMode(mode) {
-      searchMode = mode === "radio" ? "radio" : "music";
+      document.body.classList.remove("playlist-open");
+      searchMode = ["radio", "podcast"].includes(mode) ? mode : "music";
       const radio = searchMode === "radio";
-      $("#musicSearchMode").classList.toggle("active", !radio);
+      const podcast = searchMode === "podcast";
+      $("#musicSearchMode").classList.toggle("active", searchMode === "music");
       $("#radioSearchMode").classList.toggle("active", radio);
-      $("#musicSearchMode").setAttribute("aria-pressed", String(!radio));
+      $("#podcastSearchMode").classList.toggle("active", podcast);
+      $("#musicSearchMode").setAttribute("aria-pressed", String(searchMode === "music"));
       $("#radioSearchMode").setAttribute("aria-pressed", String(radio));
-      $("#searchModeTitle").textContent = radio ? "live radio" : "music and playlists";
-      $("#searchInput").placeholder = radio ? "Station name, city, or genre" : "Song, artist, video, or playlist URL";
-      $("#searchButton").setAttribute("aria-label", radio ? "Search radio" : "Search music");
-      $("#searchButton").setAttribute("title", radio ? "Search radio" : "Search music");
-      $("#results").hidden = radio;
+      $("#podcastSearchMode").setAttribute("aria-pressed", String(podcast));
+      $("#searchInput").placeholder = radio
+        ? "Station name, city, or genre"
+        : podcast
+          ? "Podcast name or topic"
+          : "Song, artist, video, or playlist URL";
+      const floatingLabel = $("#searchInput + span");
+      if (floatingLabel) floatingLabel.textContent = $("#searchInput").placeholder;
+      const searchLabel = radio ? "Search radio" : podcast ? "Search podcasts" : "Search music";
+      $("#searchButton").setAttribute("aria-label", searchLabel);
+      $("#searchButton").setAttribute("title", searchLabel);
+      $("#results").hidden = radio || podcast;
+      $("#searchSentinel").hidden = radio || podcast;
       $("#radioResults").hidden = !radio;
+      $("#podcastResults").hidden = !podcast;
       $("#playlistPreview").hidden = true;
+      playlistPreviewData = null;
       $("#results").innerHTML = "";
+      resetPagedList("search");
       $("#radioResults").innerHTML = "";
-      $("#searchStatus").textContent = radio ? "Enter a station name to search live radio." : "";
-      history.replaceState(null, "", radio ? "#radios" : location.pathname + location.search);
+      $("#podcastResults").innerHTML = "";
+      $("#searchStatus").textContent = "";
+      renderMusicRecommendations();
+      history.replaceState(null, "", radio ? "#radios" : podcast ? "#podcasts" : location.pathname + location.search);
     }
 
     document.querySelectorAll(".search-mode-button").forEach((button) => {
@@ -669,20 +1055,283 @@
       });
     });
 
-    $("#deviceButton").addEventListener("click", () => openDeviceDialog(false));
-    $("#cancelDevice").addEventListener("click", () => deviceDialog.close());
+    function pagedItemKey(name, item) {
+      if (name === "recent") return String(item.id || "");
+      if (name === "discover") return String(item.id || item.url || "");
+      if (name === "favorites" || name === "search") return String(item.video_id || "");
+      return JSON.stringify([item.artist || "", item.title || ""]);
+    }
+
+    function mergePagedItems(name, incoming) {
+      const list = pagedLists[name];
+      const seen = new Set(list.items.map((item) => pagedItemKey(name, item)));
+      for (const item of incoming || []) {
+        const key = pagedItemKey(name, item);
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        list.items.push(item);
+      }
+    }
+
+    function updateInfiniteSentinel(name, message = "") {
+      const sentinel = $(`#${name === "recent" ? "recent" : name === "favorites" ? "favorite" : name}Sentinel`);
+      if (!sentinel) return;
+      const list = pagedLists[name];
+      sentinel.classList.toggle("is-loading", Boolean(list && list.loading));
+      sentinel.textContent = message || (list && list.loading
+        ? "Loading more"
+        : list && list.error
+          ? list.error
+          : "");
+    }
+
+    function renderPagedList(name) {
+      if (name === "recent") renderRecentTracks();
+      else if (name === "favorites") renderFavoriteTracks();
+      else if (name === "discover") renderDiscoverTracks();
+      else if (name === "search") renderResults();
+      if (name === "search") renderMusicRecommendations();
+    }
+
+    function resetPagedList(name, options = {}) {
+      const list = pagedLists[name];
+      list.items = [];
+      list.page = 0;
+      list.loading = false;
+      list.hasMore = name === "search" ? Boolean(options.query) : true;
+      list.initialized = false;
+      list.error = "";
+      list.generation = Number(list.generation || 0) + 1;
+      if (name === "search") list.query = options.query || "";
+      renderPagedList(name);
+      updateInfiniteSentinel(name);
+    }
+
+    function isPagedListVisible(name) {
+      const panel = document.querySelector("#blackPanel");
+      if (!panel || panel.hidden) return false;
+      if (name === "search") {
+        return searchMode === "music" && Boolean(pagedLists.search.query) && !$("#flowAddPane").hidden;
+      }
+      const paneId = name === "recent" ? "flowRecentPane" : name === "favorites" ? "flowFavoritesPane" : "flowDiscoverPane";
+      return !$("#" + paneId).hidden;
+    }
+
+    function syncPagedListRevisions(state) {
+      const revisions = state.list_revisions || {};
+      for (const name of ["recent", "favorites"]) {
+        const revision = String(revisions[name] || "");
+        if (!revision || pagedListRevisions[name] === revision) continue;
+        const changed = Boolean(pagedListRevisions[name]);
+        pagedListRevisions[name] = revision;
+        if (!changed || !pagedLists[name].initialized) continue;
+        resetPagedList(name);
+        if (isPagedListVisible(name)) loadPagedList(name);
+      }
+    }
+
+    async function loadPagedList(name, { reset = false } = {}) {
+      const list = pagedLists[name];
+      if (list.loading || (!reset && (!list.hasMore || (name === "search" && !list.query)))) return;
+      if (reset) resetPagedList(name, { query: name === "search" ? list.query : "" });
+      const nextPage = list.page + 1;
+      const generation = Number(list.generation || 0);
+      list.loading = true;
+      list.error = "";
+      updateInfiniteSentinel(name);
+      try {
+        let data;
+        if (name === "recent") {
+          data = await api(`/api/recents?page=${nextPage}&limit=${PAGED_LIST_LIMIT}`);
+        } else if (name === "favorites") {
+          data = await api(`/api/favorites?page=${nextPage}&limit=${PAGED_LIST_LIMIT}`);
+        } else if (name === "discover") {
+          if (!spotifyProfileId) {
+            list.initialized = true;
+            list.hasMore = false;
+            list.items = [];
+            renderPagedList(name);
+            return;
+          }
+          data = await api(`/api/spotify/playlists?profile=${encodeURIComponent(spotifyProfileId)}`);
+        } else {
+          data = await api(`/api/search?q=${encodeURIComponent(list.query)}&page=${nextPage}&limit=${PAGED_LIST_LIMIT}`);
+        }
+        if (generation !== Number(list.generation || 0)) return;
+        const results = Array.isArray(data.results) ? data.results : [];
+        const previousCount = list.items.length;
+        mergePagedItems(name, results);
+        list.page = Number(data.page || nextPage);
+        list.hasMore = typeof data.has_more === "boolean"
+          ? data.has_more
+          : results.length >= PAGED_LIST_LIMIT;
+        if (name === "discover" || (nextPage > 1 && list.items.length === previousCount)) {
+          list.hasMore = false;
+        }
+        list.initialized = true;
+        if (name === "discover") {
+          discoverPage = list.page;
+          discoverKey = `daily:${list.page}`;
+          $("#discoverStatus").textContent = `Spotify · ${list.items.length} public playlists`;
+        }
+        renderPagedList(name);
+        updateInfiniteSentinel(name);
+      } catch (error) {
+        if (generation !== Number(list.generation || 0)) return;
+        list.initialized = true;
+        list.error = error.message || "Could not load more";
+        if (!list.items.length) renderPagedList(name);
+      } finally {
+        if (generation !== Number(list.generation || 0)) return;
+        list.loading = false;
+        updateInfiniteSentinel(name);
+      }
+    }
+
+    function loadFlowPage(tab) {
+      if (tab === "recent" || tab === "favorites" || tab === "discover") {
+        const list = pagedLists[tab];
+        if (!list.initialized) loadPagedList(tab);
+      }
+    }
+
+    function setFlowTab(tab) {
+      const selected = ["add", "queue", "recent", "favorites", "discover", "device"].includes(tab) ? tab : "add";
+      const panes = { add: "flowAddPane", queue: "flowQueuePane", recent: "flowRecentPane", favorites: "flowFavoritesPane", discover: "flowDiscoverPane", device: "flowDevicePane" };
+      document.querySelectorAll(".flow-tab").forEach((button) => {
+        const active = button.dataset.flowTab === selected;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+      Object.entries(panes).forEach(([name, id]) => {
+        document.getElementById(id).hidden = name !== selected;
+      });
+      $("#deviceClients").hidden = selected !== "device";
+      $("#deviceInlineStatus").hidden = selected !== "device";
+      document.body.classList.toggle("device-active", selected === "device");
+      if (selected === "device") {
+        $("#deviceInlineInput").value = deviceName || suggestedDeviceName();
+        $("#spotifyProfileInput").value = spotifyProfileId;
+      }
+      localStorage.setItem("selfStationFlowTab", selected);
+      loadFlowPage(selected);
+    }
+
+    document.querySelectorAll(".flow-tab").forEach((button) => {
+      button.addEventListener("click", () => setFlowTab(button.dataset.flowTab));
+    });
+
     $("#lyricsToggle").addEventListener("click", () => {
       setLyricsExpanded($("#lyricsToggle").getAttribute("aria-expanded") !== "true");
     });
-    $("#deviceForm").addEventListener("submit", (event) => {
+    $("#wikiToggle").addEventListener("click", () => {
+      setContextExpanded($("#wikiToggle").getAttribute("aria-expanded") !== "true");
+    });
+    $("#downloadToggle").addEventListener("click", () => {
+      const current = lastState && lastState.current;
+      if (!current || isLiveRadio(current) || isPodcast(current) || !current.video_id) return;
+      const link = document.createElement("a");
+      link.href = `/download/${encodeURIComponent(current.video_id)}`;
+      link.download = "";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    });
+    $("#openTrackButton").addEventListener("click", () => {
+      const current = lastState && lastState.current;
+      if (!current) return;
+      const url = externalTrackUrl(current);
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    });
+    const recognizeToggle = $("#recognizeToggle");
+    if (recognizeToggle) recognizeToggle.addEventListener("click", async () => {
+      const current = lastState && lastState.current;
+      if (!current || !isLiveRadio(current)) return;
+      const button = $("#recognizeToggle");
+      button.disabled = true;
+      button.classList.add("is-loading");
+      setRecognitionExpanded(true);
+      $("#recognitionStatus").textContent = "Capturing 30s and comparing 3 audio windows…";
+      $("#recognitionText").textContent = "Identification waits for agreement between at least two windows.";
+      try {
+        const result = await api("/api/radio/recognize", {
+          method: "POST",
+          body: JSON.stringify({ queue_id: current.id }),
+        });
+        if (result.found && result.title) {
+          recognitionTrackKey = String(current.id);
+          const windowSummary = result.windows
+            ? `${Number(result.matched_windows || 0)}/${Number(result.windows)} windows${result.consensus ? " agree" : ""}`
+            : "";
+          $("#recognitionStatus").textContent = result.source
+            ? `Track identified · ${result.source}${windowSummary ? ` · ${windowSummary}` : ""}`
+            : `Track identified · AcoustID${windowSummary ? ` · ${windowSummary}` : ""}`;
+          $("#recognitionText").textContent = [
+            result.artist,
+            result.title,
+            result.score && result.source !== "stream metadata" ? `match ${(Number(result.score) * 100).toFixed(1)}%` : "",
+          ].filter(Boolean).join(" · ");
+        } else {
+          $("#recognitionStatus").textContent = result.message || "No match found";
+          $("#recognitionText").textContent = result.sample_duration && result.windows
+            ? `Captured ${result.sample_duration}s in ${result.windows} windows · ${Number(result.matched_windows || 0)}/${result.windows} agreed.`
+            : result.sample_duration
+            ? `Captured ${result.sample_duration}s · try again with a clearer part of the broadcast.`
+            : "Try again with a clearer part of the broadcast.";
+        }
+        const cooldown = Math.max(10, Number(result.cooldown || 30));
+        let remaining = cooldown;
+        button.title = `Recognize current radio audio · available in ${remaining}s`;
+        clearInterval(recognizeCooldownTimer);
+        recognizeCooldownTimer = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(recognizeCooldownTimer);
+            recognizeCooldownTimer = null;
+            button.classList.remove("is-loading");
+            button.disabled = !(lastState && isLiveRadio(lastState.current));
+            button.title = "Recognize current radio audio";
+            return;
+          }
+          button.title = `Recognize current radio audio · available in ${remaining}s`;
+        }, 1000);
+      } catch (error) {
+        button.classList.remove("is-loading");
+        button.disabled = false;
+        setRecognitionExpanded(true);
+        $("#recognitionStatus").textContent = error.message || "Recognition failed";
+        $("#recognitionText").textContent = "";
+      }
+    });
+    function flashSavedField(form) {
+      const icon = form.querySelector(".device-save svg");
+      icon.getAnimations().forEach((animation) => animation.cancel());
+      icon.animate([
+        { color: "var(--accent)" },
+        { color: "var(--accent)", offset: .7 },
+        { color: "#f2f2ee" },
+      ], { duration: 1000, easing: "ease-out" });
+    }
+
+    $("#deviceInlineForm").addEventListener("submit", (event) => {
       event.preventDefault();
-      const name = $("#deviceInput").value.trim().replace(/\s+/g, " ").slice(0, 40);
+      const name = $("#deviceInlineInput").value.trim().replace(/\s+/g, " ").slice(0, 40);
       if (!name) return;
       deviceName = name;
       localStorage.setItem("selfStationDeviceName", deviceName);
       updateDeviceLabel();
-      deviceDialog.close();
+      $("#deviceInlineStatus").textContent = "Device name saved.";
+      flashSavedField(event.currentTarget);
       fetchState();
+    });
+    $("#spotifyProfileForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      spotifyProfileId = $("#spotifyProfileInput").value.trim();
+      localStorage.setItem("selfStationSpotifyProfile", spotifyProfileId);
+      $("#deviceInlineStatus").textContent = spotifyProfileId ? "Spotify profile saved." : "Spotify profile cleared.";
+      flashSavedField(event.currentTarget);
+      resetPagedList("discover");
+      if (!$("#flowDiscoverPane").hidden) loadPagedList("discover");
     });
 
     function formatDuration(totalSeconds) {
@@ -699,9 +1348,30 @@
       return `${new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value)} plays`;
     }
 
+    function formatLocalPlays(value) {
+      const count = Math.max(0, Number(value) || 0);
+      return `Played ${count} ${count === 1 ? "time" : "times"}`;
+    }
+
     function formatDate(timestamp) {
       if (!timestamp) return "";
-      return new Date(timestamp * 1000).toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" });
+      const raw = typeof timestamp === "number" ? timestamp * 1000 : timestamp;
+      const date = new Date(raw);
+      if (Number.isNaN(date.getTime())) return "";
+      // undefined delegates language, date order, clock and timezone to the
+      // visitor's current browser/OS locale instead of forcing en-US.
+      return date.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
+    }
+
+    function formatElapsed(timestamp, now = Date.now() / 1000) {
+      const seconds = Math.max(0, Math.floor(Number(now) - Number(timestamp || now)));
+      if (seconds < 60) return `${seconds}s`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ${minutes % 60}m`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ${hours % 24}h`;
     }
 
     function escapeHtml(value) {
@@ -714,13 +1384,146 @@
       return Boolean(item && item.media_type === "radio");
     }
 
+    function externalTrackUrl(item) {
+      if (!item) return "";
+      if (isLiveRadio(item)) return item.stream_url || "";
+      return item.url || item.webpage_url || item.video_url
+        || (item.video_id ? `https://www.youtube.com/watch?v=${encodeURIComponent(item.video_id)}` : "");
+    }
+
+    function isPodcast(item) {
+      return Boolean(item && item.media_type === "podcast");
+    }
+
+    function isMusic(item) {
+      return Boolean(item && ["music", "youtube"].includes(item.media_type));
+    }
+
     function artworkUrl(item, quality = "mqdefault") {
-      if (!item) return RADIO_PLACEHOLDER;
-      if (isLiveRadio(item)) return item.thumbnail || RADIO_PLACEHOLDER;
+      if (!item) return DEFAULT_ARTWORK;
+      if (isLiveRadio(item)) return item.thumbnail || DEFAULT_ARTWORK;
+      if (isPodcast(item)) return item.thumbnail || DEFAULT_ARTWORK;
+      if (item.thumbnail) return item.thumbnail;
+      if (!item.video_id) return DEFAULT_ARTWORK;
       return `https://i.ytimg.com/vi/${encodeURIComponent(item.video_id)}/${quality}.jpg`;
     }
 
-    function mediaSummary(item) {
+    const DEFAULT_ACCENT = "#f4f4f1";
+    const fixedAccentPicker = $("#fixedAccentColor");
+    const accentModeInputs = document.querySelectorAll('input[name="accentMode"]');
+    let accentArtworkKey = null;
+    let artworkAccent = DEFAULT_ACCENT;
+    let accentMode = localStorage.getItem("selfStationAccentMode") === "fixed" ? "fixed" : "dynamic";
+    const savedAccent = localStorage.getItem("selfStationFixedAccent");
+    if (/^#[0-9a-f]{6}$/i.test(savedAccent || "")) fixedAccentPicker.value = savedAccent;
+
+    function applyAccentColor() {
+      const fixed = accentMode === "fixed";
+      const color = fixed ? fixedAccentPicker.value : artworkAccent;
+      let ink = "#080909";
+      if (fixed) {
+        const channels = color.slice(1).match(/../g).map((part) => parseInt(part, 16) / 255);
+        const [red, green, blue] = channels.map((value) => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
+        if (.2126 * red + .7152 * green + .0722 * blue < .179) ink = "#fff";
+      }
+      document.documentElement.style.setProperty("--accent", color);
+      document.documentElement.style.setProperty("--accent-ink", ink);
+    }
+
+    accentModeInputs.forEach((input) => {
+      input.checked = input.value === accentMode;
+      input.addEventListener("change", () => {
+        accentMode = input.value;
+        localStorage.setItem("selfStationAccentMode", accentMode);
+        applyAccentColor();
+      });
+    });
+    fixedAccentPicker.addEventListener("input", () => {
+      accentMode = "fixed";
+      accentModeInputs.forEach((input) => { input.checked = input.value === accentMode; });
+      localStorage.setItem("selfStationAccentMode", accentMode);
+      localStorage.setItem("selfStationFixedAccent", fixedAccentPicker.value);
+      applyAccentColor();
+    });
+    applyAccentColor();
+
+    function resetAccentColor() {
+      artworkAccent = DEFAULT_ACCENT;
+      applyAccentColor();
+    }
+
+    function setAccentColor(red, green, blue) {
+      const pastel = [red, green, blue].map((channel) => Math.round(channel * .48 + 250 * .52));
+      artworkAccent = `rgb(${pastel.join(", ")})`;
+      applyAccentColor();
+    }
+
+    function extractAccentColor(url) {
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.decoding = "async";
+      image.onload = () => {
+        if (url !== accentArtworkKey) return;
+        try {
+          const canvas = document.createElement("canvas");
+          const size = 32;
+          canvas.width = size;
+          canvas.height = size;
+          const context = canvas.getContext("2d", { willReadFrequently: true });
+          context.drawImage(image, 0, 0, size, size);
+          const pixels = context.getImageData(0, 0, size, size).data;
+          let red = 0;
+          let green = 0;
+          let blue = 0;
+          let weightTotal = 0;
+          for (let index = 0; index < pixels.length; index += 4) {
+            if (pixels[index + 3] < 160) continue;
+            const sampleRed = pixels[index];
+            const sampleGreen = pixels[index + 1];
+            const sampleBlue = pixels[index + 2];
+            const maximum = Math.max(sampleRed, sampleGreen, sampleBlue);
+            const minimum = Math.min(sampleRed, sampleGreen, sampleBlue);
+            const luminance = (0.2126 * sampleRed + 0.7152 * sampleGreen + 0.0722 * sampleBlue) / 255;
+            const saturation = maximum ? (maximum - minimum) / maximum : 0;
+            if (luminance < 0.08 || luminance > 0.94) continue;
+            const weight = (0.35 + saturation) * (0.45 + (1 - Math.abs(luminance - 0.5)));
+            red += sampleRed * weight;
+            green += sampleGreen * weight;
+            blue += sampleBlue * weight;
+            weightTotal += weight;
+          }
+          if (!weightTotal) {
+            resetAccentColor();
+            return;
+          }
+          setAccentColor(
+            Math.round(red / weightTotal),
+            Math.round(green / weightTotal),
+            Math.round(blue / weightTotal),
+          );
+        } catch (_error) {
+          // Cross-origin thumbnails may not allow canvas sampling.
+          resetAccentColor();
+        }
+      };
+      image.onerror = () => {
+        if (url === accentArtworkKey) resetAccentColor();
+      };
+      image.src = url;
+    }
+
+    function updateAccentFromArtwork(url) {
+      const nextKey = url && !String(url).startsWith("data:") ? url : null;
+      if (nextKey === accentArtworkKey) return;
+      accentArtworkKey = nextKey;
+      if (!nextKey) {
+        resetAccentColor();
+        return;
+      }
+      extractAccentColor(nextKey);
+    }
+
+    function mediaSummary(item, includeViews = true) {
       if (isLiveRadio(item)) {
         return [
           item.uploader,
@@ -729,7 +1532,15 @@
           item.bitrate ? `${item.bitrate} kbps` : "",
         ].filter(Boolean).join(" · ");
       }
-      return [item.uploader || "YouTube", formatDuration(item.duration), formatViews(item.view_count)].filter(Boolean).join(" · ");
+      if (isPodcast(item)) {
+        return [item.uploader || "Podcast", formatDuration(item.duration)].filter(Boolean).join(" · ");
+      }
+      return [item.uploader || "YouTube", formatDuration(item.duration), includeViews && item.view_count != null ? formatViews(item.view_count) : ""].filter(Boolean).join(" · ");
+    }
+
+    function nowPlayingSummary(item) {
+      if (isLiveRadio(item)) return mediaSummary(item, false);
+      return item.uploader || (isPodcast(item) ? "Podcast" : "YouTube");
     }
 
     function streamUrl(item, state = lastState) {
@@ -751,6 +1562,7 @@
     }
 
     function setLyricsExpanded(expanded) {
+      if (expanded) setContextExpanded(false);
       const button = $("#lyricsToggle");
       button.setAttribute("aria-expanded", String(expanded));
       button.setAttribute("aria-label", expanded ? "Hide lyrics" : "Show lyrics");
@@ -758,7 +1570,15 @@
       $("#lyricsPanel").hidden = !expanded;
     }
 
+    function setTrackDetailsAvailable(buttonId, available) {
+      const button = document.getElementById(buttonId);
+      button.toggleAttribute("data-content-found", available);
+      if (available) button.setAttribute("aria-description", "Available for the current track");
+      else button.removeAttribute("aria-description");
+    }
+
     function resetLyricsPanel() {
+      setTrackDetailsAvailable("lyricsToggle", false);
       lyricsRequestId += 1;
       lyricsTrackKey = "";
       $("#lyricsToggle").disabled = true;
@@ -778,6 +1598,7 @@
       if (key === lyricsTrackKey) return;
       lyricsTrackKey = key;
       const requestId = ++lyricsRequestId;
+      setTrackDetailsAvailable("lyricsToggle", false);
       setLyricsExpanded(false);
       $("#lyricsSource").textContent = "LRCLIB";
       $("#lyricsStatus").textContent = "Loading lyrics…";
@@ -786,7 +1607,8 @@
         const params = new URLSearchParams({ title: current.title || "", artist: current.uploader || "" });
         const data = await api(`/api/lyrics?${params}`);
         if (requestId !== lyricsRequestId || key !== lyricsTrackKey) return;
-        if (data.found && data.lyrics) {
+        if (data.found && String(data.lyrics || "").trim()) {
+          setTrackDetailsAvailable("lyricsToggle", true);
           $("#lyricsStatus").textContent = [data.artist, data.title].filter(Boolean).join(" · ") || "Lyrics found";
           $("#lyricsText").textContent = data.lyrics;
         } else {
@@ -796,6 +1618,75 @@
         if (requestId !== lyricsRequestId || key !== lyricsTrackKey) return;
         $("#lyricsStatus").textContent = error.message || "Lyrics unavailable right now.";
       }
+    }
+
+    function setContextExpanded(expanded) {
+      if (expanded) setLyricsExpanded(false);
+      const button = $("#wikiToggle");
+      button.setAttribute("aria-expanded", String(expanded));
+      button.setAttribute("aria-label", expanded ? "Hide track context" : "Show track context");
+      button.title = expanded ? "Hide track context" : "Show track context";
+      $("#contextPanel").hidden = !expanded;
+    }
+
+    function resetContextPanel() {
+      setTrackDetailsAvailable("wikiToggle", false);
+      contextRequestId += 1;
+      contextTrackKey = "";
+      $("#wikiToggle").disabled = true;
+      setContextExpanded(false);
+      $("#contextStatus").textContent = "Track context is unavailable.";
+      $("#contextText").textContent = "";
+      $("#contextSource").removeAttribute("href");
+    }
+
+    async function loadContext(current) {
+      if (!current || isLiveRadio(current) || isPodcast(current)) {
+        resetContextPanel();
+        return;
+      }
+      const key = [current.video_id, current.title, current.uploader].join("|");
+      $("#wikiToggle").disabled = false;
+      if (key === contextTrackKey) return;
+      contextTrackKey = key;
+      const requestId = ++contextRequestId;
+      setTrackDetailsAvailable("wikiToggle", false);
+      setContextExpanded(false);
+      $("#contextStatus").textContent = "Loading Last.fm context…";
+      $("#contextText").textContent = "";
+      try {
+        const params = new URLSearchParams({ title: current.title || "", artist: current.uploader || "" });
+        const data = await api(`/api/lastfm/context?${params}`);
+        if (requestId !== contextRequestId || key !== contextTrackKey) return;
+        const context = (data.summary || data.content || "").replace(/<[^>]+>/g, "").trim();
+        setTrackDetailsAvailable("wikiToggle", Boolean(context));
+        $("#contextStatus").textContent = [data.artist, data.album].filter(Boolean).join(" · ") || (data.found ? "Last.fm" : "No context found");
+        $("#contextText").textContent = context || "No wiki/context was returned for this track.";
+        if (data.url) {
+          $("#contextSource").href = data.url;
+          $("#contextSource").textContent = "Open Last.fm";
+        }
+      } catch (error) {
+        if (requestId !== contextRequestId || key !== contextTrackKey) return;
+        $("#contextStatus").textContent = error.message || "Last.fm context unavailable.";
+        $("#contextText").textContent = "";
+      }
+    }
+
+    function setRecognitionExpanded(expanded) {
+      const button = $("#recognizeToggle");
+      button.setAttribute("aria-expanded", String(expanded));
+      button.setAttribute("aria-label", "Recognize current radio audio");
+      button.title = "Recognize current radio audio";
+      $("#recognitionPanel").hidden = !expanded;
+    }
+
+    function resetRecognitionPanel() {
+      recognitionRequestId += 1;
+      recognitionTrackKey = "";
+      setRecognitionExpanded(false);
+      $("#recognitionStatus").textContent = "Waiting for recognition…";
+      $("#recognitionText").textContent = "";
     }
 
     function targetPosition(state = lastState) {
@@ -821,42 +1712,90 @@
         const sample = state.server_time * 1000 - ((started + finished) / 2);
         serverOffsetMs = offsetReady ? serverOffsetMs * .8 + sample * .2 : sample;
         offsetReady = true;
+        syncPagedListRevisions(state);
         lastState = state;
         renderState(state);
         syncAudio();
-        const names = state.clients.map((client) => client.name);
-        $("#connectionText").textContent = `${names.length} listener${names.length === 1 ? "" : "s"} · ${names.join(", ")}`;
       } catch (error) {
-        $("#connectionText").textContent = "server unavailable";
-        $("#connectionText").classList.add("error");
       } finally {
         stateRequestRunning = false;
       }
     }
 
     function renderState(state) {
+      const clients = Array.isArray(state.clients) ? state.clients : [];
+      $("#deviceTab").innerHTML = `Device <span class="device-tab-count">${clients.length}</span>`;
+      $("#deviceClients").innerHTML = clients.length ? clients.map((client) => `
+        <article class="device-client">
+          <div class="device-client-name">${escapeHtml(client.name || "Browser")}</div>
+          <div class="device-client-meta"><span>ID</span> ${escapeHtml(client.id || "—")}</div>
+          <div class="device-client-meta"><span>IP</span> ${escapeHtml(client.ip || "unknown")}</div>
+          <div class="device-client-meta"><span>UP</span> ${formatElapsed(client.connected_at, state.server_time)}</div>
+        </article>
+      `).join("") : '<div class="empty">No active listeners.</div>';
       const current = state.current;
+      updateMusicRecommendations(current);
+      const progressPlaying = Boolean(current && state.status === "playing" && !isLiveRadio(current) && Number(current.duration) > 0);
+      $("#progressBar").parentElement.classList.toggle("is-playing", progressPlaying);
+      const nowTitle = current && current.title
+        ? (current.media_type === "radio"
+          ? [current.title, current.radio_now_playing]
+            .filter(Boolean)
+            .filter((value, index, values) => values.indexOf(value) === index)
+            .join(" · ")
+          : current.title)
+        : "";
+      document.title = nowTitle || "Self Station";
+      const currentArtwork = current ? artworkUrl(current, "hqdefault") : "";
+      document.body.classList.toggle("has-artwork", Boolean(current && currentArtwork));
+      updateAccentFromArtwork(currentArtwork);
       $("#pageBackdrop").style.backgroundImage = current
-        ? `url(${JSON.stringify(artworkUrl(current, "hqdefault"))})`
+        ? `url(${JSON.stringify(currentArtwork)}), url(${JSON.stringify(DEFAULT_ARTWORK)})`
         : "none";
-      $("#playbackState").textContent = state.status === "playing" ? "playing" : state.status === "paused" ? "paused" : "stopped";
       $("#nowEmpty").hidden = Boolean(current);
       $("#nowContent").hidden = !current;
       $("#playPauseButton").disabled = !current;
       $("#skipButton").disabled = !current;
+      const requeueButton = $("#requeueCurrentButton");
+      requeueButton.disabled = !current || !isMusic(current) || !current.video_id;
+      requeueButton.innerHTML = ICONS.add;
+      const favoriteButton = $("#favoriteButton");
+      favoriteButton.disabled = !current;
+      favoriteButton.classList.toggle("active", Boolean(current && current.favorite));
+      favoriteButton.setAttribute("aria-pressed", String(Boolean(current && current.favorite)));
+      favoriteButton.setAttribute("aria-label", current && current.favorite ? "Remove favorite" : "Favorite");
+      favoriteButton.title = current && current.favorite ? "Remove favorite" : "Favorite";
       $("#nowDisc").classList.toggle("is-playing", Boolean(current) && state.status === "playing");
       loadLyrics(current);
+      loadContext(current);
+      const wikiButton = $("#wikiToggle");
+      const musicCurrent = isMusic(current);
+      wikiButton.disabled = !musicCurrent;
+      const downloadButton = $("#downloadToggle");
+      downloadButton.disabled = !musicCurrent || !current.video_id;
+      const openTrackButton = $("#openTrackButton");
+      const trackUrl = externalTrackUrl(current);
+      openTrackButton.disabled = !trackUrl;
       if (current) {
         const cover = $("#nowCover");
         const artwork = artworkUrl(current);
         if (cover.dataset.artwork !== artwork) {
           cover.dataset.artwork = artwork;
           cover.src = artwork;
-          cover.onerror = () => { cover.src = RADIO_PLACEHOLDER; };
+          let fallbackTried = false;
+          cover.onerror = () => {
+            if (!fallbackTried && !isLiveRadio(current) && !isPodcast(current) && current.video_id) {
+              fallbackTried = true;
+              cover.src = `https://i.ytimg.com/vi/${encodeURIComponent(current.video_id)}/hqdefault.jpg`;
+              return;
+            }
+            cover.onerror = null;
+            cover.src = DEFAULT_ARTWORK;
+          };
         }
-        $("#nowTitle").textContent = current.title;
-        $("#nowUploader").textContent = mediaSummary(current);
-        $("#nowAdded").textContent = `Added by ${current.added_by} on ${formatDate(current.added_at)} · ${current.local_plays} plays in Self Station`;
+        $("#nowTitle").textContent = nowTitle;
+        $("#nowUploader").textContent = nowPlayingSummary(current);
+        $("#nowAdded").textContent = `Added by ${current.added_by} on ${formatDate(current.added_at)} · ${formatLocalPlays(current.local_plays)}`;
         const isPlaying = state.status === "playing";
         $("#playPauseButton").innerHTML = isPlaying ? ICONS.pause : ICONS.play;
         $("#playPauseButton").setAttribute("aria-label", isPlaying ? "Pause" : "Play");
@@ -865,21 +1804,31 @@
 
       const items = state.queue || [];
       $("#queueCount").textContent = `${items.length} track${items.length === 1 ? "" : "s"}`;
-      $("#queue").innerHTML = items.length ? items.map((item, index) => `
-        <article class="queue-item">
+      $(".queue-tab-count").textContent = items.length;
+      $("#clearQueueButton").disabled = items.length === 0;
+      const queueKey = JSON.stringify(items.map((item) => [
+        item.id, item.video_id, item.title, item.uploader, item.duration, item.added_by,
+        item.added_at, item.local_plays, item.media_type, item.station_uuid
+      ]));
+      if (queueKey !== queueRenderKey) {
+        queueRenderKey = queueKey;
+        $("#queue").innerHTML = items.length ? items.map((item, index) => `
+        <article class="queue-item"><img class="black-queue-cover" src="${escapeHtml(artworkUrl(item))}" alt="" loading="lazy">
           <div class="queue-index">${String(index + 1).padStart(2, "0")}</div>
           <div>
             <div class="item-title">${escapeHtml(item.title)}</div>
             <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
-            <div class="item-meta">${escapeHtml(item.added_by)} · ${formatDate(item.added_at)} · ${item.local_plays} plays in Self Station</div>
+            <div class="item-meta">${escapeHtml(item.added_by)} · ${formatDate(item.added_at)} · ${formatLocalPlays(item.local_plays)}</div>
           </div>
           <div class="queue-actions">
-            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="up" aria-label="Move up" title="Move up" ${index === 0 ? "disabled" : ""}>${ICONS.moveUp}</button>
-            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="down" aria-label="Move down" title="Move down" ${index === items.length - 1 ? "disabled" : ""}>${ICONS.moveDown}</button>
+            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="up" aria-label="Move earlier in queue" title="Move earlier in queue" ${index === 0 ? "disabled" : ""}>${ICONS.moveUp}</button>
+            <button class="btn compact icon move-queue" type="button" data-queue-id="${Number(item.id)}" data-direction="down" aria-label="Move later in queue" title="Move later in queue" ${index === items.length - 1 ? "disabled" : ""}>${ICONS.moveDown}</button>
             <button class="btn compact icon remove-queue" type="button" data-queue-id="${Number(item.id)}" aria-label="Remove from queue" title="Remove from queue">${ICONS.remove}</button>
           </div>
         </article>
-      `).join("") : '<div class="empty">Nothing is waiting.</div>';
+      `).join("") : `<div class="empty list-empty-message">Nothing is waiting.</div>${fadedListCards("queue-item", 3)}`;
+        bindImageFallbacks("#queue .black-queue-cover");
+      }
 
       const autoRadioEnabled = Boolean(state.auto_radio);
       const autoRadioToggle = $("#autoRadioToggle");
@@ -888,8 +1837,60 @@
       autoRadioToggle.setAttribute("aria-label", `${autoRadioEnabled ? "Disable" : "Enable"} automatic radio`);
       autoRadioToggle.title = `${autoRadioEnabled ? "Disable" : "Enable"} automatic radio`;
 
-      const recentTracks = state.recent_tracks || [];
-      $("#recentTracks").innerHTML = recentTracks.length ? recentTracks.map((item) => `
+      updateProgress();
+    }
+
+    async function queueDiscoverTrack(item, button) {
+      if (!item || !item.title) return;
+      button.disabled = true;
+      button.title = "Searching YouTube";
+      try {
+        const query = [item.artist, item.title].filter(Boolean).join(" ");
+        const data = await api(`/api/search?q=${encodeURIComponent(query)}`);
+        const result = (data.results || [])[0];
+        if (!result) throw new Error("Track not found on YouTube");
+        await api("/api/queue", {
+          method: "POST",
+          body: JSON.stringify({ ...result, client_id: clientId, device_name: deviceName }),
+        });
+        button.innerHTML = ICONS.check;
+        button.title = "Added";
+        button.setAttribute("aria-label", "Added");
+        button.disabled = false;
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.innerHTML = ICONS.retry;
+        button.title = error.message;
+        button.setAttribute("aria-label", error.message);
+      }
+    }
+
+    function bindImageFallbacks(selector) {
+      document.querySelectorAll(selector).forEach((image) => {
+        image.addEventListener("error", () => { image.src = DEFAULT_ARTWORK; }, { once: true });
+      });
+    }
+
+    function fadedListCards(kind = "rank-item", count = 3) {
+      const isQueue = kind === "queue-item";
+      const isResult = kind === "result";
+      return Array.from({ length: count }, (_, index) => `
+        <article class="${kind} list-placeholder" aria-hidden="true">
+          ${isQueue ? `<div class="queue-index">${String(index + 1).padStart(2, "0")}</div>` : `<span class="placeholder-cover"></span>`}
+          <div class="placeholder-copy">
+            <span class="placeholder-line placeholder-line--title"></span>
+            <span class="placeholder-line placeholder-line--meta"></span>
+            <span class="placeholder-line placeholder-line--meta placeholder-line--short"></span>
+          </div>
+          ${isQueue ? `<div class="placeholder-actions"><span></span><span></span><span></span></div>` : isResult ? `<span class="placeholder-action"></span>` : `<span class="placeholder-action"></span>`}
+        </article>
+      `).join("");
+    }
+
+    function renderRecentTracks() {
+      const items = pagedLists.recent.items;
+      $("#recentTracks").innerHTML = items.length ? items.map((item) => `
         <article class="rank-item">
           <img class="rank-cover" src="${escapeHtml(artworkUrl(item))}" alt="" loading="lazy">
           <div>
@@ -897,44 +1898,114 @@
             <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
             <div class="item-meta">${formatDate(item.started_at)} · ${escapeHtml(item.added_by)}</div>
           </div>
-          <button class="btn compact icon requeue-recent" type="button" data-index="${recentTracks.indexOf(item)}" aria-label="Add again to queue" title="Add again to queue">${ICONS.add}</button>
+          <button class="btn compact icon requeue-recent" type="button" data-recent-id="${Number(item.id)}" aria-label="Add again to queue" title="Add again to queue">${ICONS.add}</button>
         </article>
-      `).join("") : '<div class="empty">No recent playback.</div>';
-      document.querySelectorAll(".rank-cover").forEach((image) => {
-        image.addEventListener("error", () => { image.src = RADIO_PLACEHOLDER; }, { once: true });
-      });
-      document.querySelectorAll(".requeue-recent").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const item = recentTracks[Number(button.dataset.index)];
-          button.disabled = true;
-          button.title = "Adding";
-          try {
-            if (isLiveRadio(item)) {
-              await api("/api/radio/queue", {
-                method: "POST",
-                body: JSON.stringify({ station_uuid: item.station_uuid, client_id: clientId, device_name: deviceName }),
-              });
-            } else {
-              await api("/api/queue", {
-                method: "POST",
-                body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
-              });
-            }
-            button.innerHTML = ICONS.check;
-            button.title = "Added";
-            button.setAttribute("aria-label", "Added");
-            await fetchState();
-          } catch (error) {
-            button.disabled = false;
-            button.innerHTML = ICONS.retry;
-            button.title = error.message;
-            button.setAttribute("aria-label", error.message);
-          }
-        });
-      });
-      updateProgress();
+      `).join("") : `<div class="empty list-empty-message">No recent playback.</div>${fadedListCards("rank-item", 3)}`;
+      bindImageFallbacks("#recentTracks .rank-cover");
     }
 
+    function renderFavoriteTracks() {
+      const items = pagedLists.favorites.items;
+      $("#favoriteTracks").innerHTML = items.length ? items.map((item) => `
+        <article class="rank-item favorite-item">
+          <img class="rank-cover" src="${escapeHtml(artworkUrl(item))}" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(mediaSummary(item))}</div>
+            <div class="item-meta">${formatDate(item.favorited_at)} · ${formatLocalPlays(item.local_plays)}</div>
+          </div>
+          <div class="favorite-item-actions">
+            <button class="btn compact icon requeue-favorite" type="button" data-video-id="${escapeHtml(item.video_id)}" aria-label="Add favorite to queue" title="Add favorite to queue">${ICONS.add}</button>
+            <button class="btn compact icon remove-favorite" type="button" data-video-id="${escapeHtml(item.video_id)}" aria-label="Remove favorite" title="Remove favorite">${ICONS.favorite}</button>
+          </div>
+        </article>
+      `).join("") : `<div class="empty list-empty-message">No favorites yet.</div>${fadedListCards("rank-item", 3)}`;
+      bindImageFallbacks("#favoriteTracks .rank-cover");
+    }
+
+    function renderFixedDiscoverPlaylists() {
+      $("#fixedDiscoverTracks").innerHTML = FIXED_DISCOVER_PLAYLISTS.map((item, index) => `
+        <article class="rank-item discover-item fixed-discover-item">
+          <img class="rank-cover fixed-playlist-cover" data-fixed-cover-index="${index}" src="${DEFAULT_ARTWORK}" alt="" loading="eager">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.source || "Editorial playlist")} editorial playlist</div>
+          </div>
+          <button class="btn compact icon open-fixed-discover" type="button" data-fixed-discover-index="${index}" aria-label="Open playlist" title="Open playlist">${ICONS.chevron}</button>
+        </article>
+      `).join("");
+      document.querySelectorAll(".open-fixed-discover").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = FIXED_DISCOVER_PLAYLISTS[Number(button.dataset.fixedDiscoverIndex)];
+          if (!item) return;
+          button.disabled = true;
+          setFlowTab("add");
+          try { await loadPlaylistPreview(item.url); }
+          finally { button.disabled = false; }
+        });
+      });
+      FIXED_DISCOVER_PLAYLISTS.forEach(async (item, index) => {
+        try {
+          const data = await api(`/api/playlist/preview?url=${encodeURIComponent(item.url)}`);
+          const cover = document.querySelector(`[data-fixed-cover-index="${index}"]`);
+          const image = data.cover || data.tracks?.[0]?.thumbnail;
+          const fallback = data.tracks?.[0]?.thumbnail || "";
+          if (cover) {
+            cover.dataset.fallback = fallback;
+            cover.onerror = () => {
+              if (cover.dataset.fallback && cover.src !== cover.dataset.fallback) {
+                cover.src = cover.dataset.fallback;
+              }
+            };
+            if (image) cover.src = image;
+          }
+        } catch (error) {
+          // Keep the neutral placeholder when a remote cover is unavailable.
+        }
+      });
+    }
+
+    function renderDiscoverTracks() {
+      const items = pagedLists.discover.items;
+      $("#discoverTracks").innerHTML = items.length ? items.map((item, index) => `
+        <article class="rank-item discover-item">
+          <img class="rank-cover" src="${escapeHtml(item.image || DEFAULT_ARTWORK)}" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">Spotify public playlist${item.count ? ` · ${item.count} tracks` : ""}</div>
+          </div>
+          <button class="btn compact icon add-discover" type="button" data-discover-index="${index}" aria-label="Open playlist" title="Open playlist">${ICONS.chevron}</button>
+        </article>
+      `).join("") : `<div class="empty list-empty-message">${discoverLoading ? "Loading daily tracks…" : (spotifyProfileId ? "No public playlists found." : "Add your Spotify profile ID in Device to load public playlists.")}</div>${fadedListCards("rank-item", 3)}`;
+      bindImageFallbacks("#discoverTracks img");
+      document.querySelectorAll(".add-discover").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = items[Number(button.dataset.discoverIndex)];
+          if (!item) return;
+          button.disabled = true;
+          setFlowTab("add");
+          await loadPlaylistPreview(item.url);
+          button.disabled = false;
+        });
+      });
+    }
+
+    async function loadDiscover(reset = false) {
+      if (discoverLoading) return;
+      discoverLoading = true;
+      $("#discoverRefresh").disabled = true;
+        $("#discoverStatus").textContent = reset ? "Refreshing daily tracks…" : "Loading daily tracks…";
+      try {
+        await loadPagedList("discover", { reset });
+      } catch (error) {
+        $("#discoverStatus").textContent = error.message;
+      } finally {
+        discoverLoading = false;
+        $("#discoverRefresh").disabled = false;
+      }
+    }
+
+    $("#discoverRefresh").addEventListener("click", () => loadDiscover(true));
     $("#queue").addEventListener("click", async (event) => {
       const button = event.target.closest(".remove-queue, .move-queue");
       if (!button) return;
@@ -954,6 +2025,112 @@
         button.innerHTML = ICONS.retry;
         button.title = error.message;
         button.setAttribute("aria-label", error.message);
+      }
+    });
+    $("#clearQueueButton").addEventListener("click", async () => {
+      const button = $("#clearQueueButton");
+      if (button.disabled || !(lastState && (lastState.queue || []).length)) return;
+      if (!window.confirm("Clear all tracks waiting in the queue?")) return;
+      button.disabled = true;
+      try {
+        await api("/api/queue/clear", { method: "POST", body: JSON.stringify({}) });
+        await fetchState();
+      } catch (error) {
+        showToast(error.message || "Could not clear queue");
+        button.disabled = false;
+      }
+    });
+
+    $("#favoriteButton").addEventListener("click", async () => {
+      if (!lastState || !lastState.current) return;
+      const button = $("#favoriteButton");
+      button.disabled = true;
+      try {
+        await api("/api/favorites/toggle", {
+          method: "POST",
+          body: JSON.stringify({ video_id: lastState.current.video_id }),
+        });
+        resetPagedList("favorites");
+        if (!$("#flowFavoritesPane").hidden) await loadPagedList("favorites");
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.title = error.message;
+        setSyncStatus(error.message, "warn");
+      }
+    });
+
+    $("#recentTracks").addEventListener("click", async (event) => {
+      const button = event.target.closest(".requeue-recent");
+      if (!button) return;
+      const item = pagedLists.recent.items.find((candidate) => Number(candidate.id) === Number(button.dataset.recentId));
+      if (!item) return;
+      button.disabled = true;
+      try {
+        if (isLiveRadio(item)) {
+          await api("/api/radio/queue", {
+            method: "POST",
+            body: JSON.stringify({ station_uuid: item.station_uuid, client_id: clientId, device_name: deviceName }),
+          });
+        } else if (isPodcast(item)) {
+          await api("/api/podcast/queue", {
+            method: "POST",
+            body: JSON.stringify({ ...item, episode_id: item.video_id, client_id: clientId, device_name: deviceName }),
+          });
+        } else {
+          await api("/api/queue", {
+            method: "POST",
+            body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
+          });
+        }
+        button.innerHTML = ICONS.check;
+        button.title = "Added";
+        button.setAttribute("aria-label", "Added");
+        button.disabled = false;
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.innerHTML = ICONS.retry;
+        button.title = error.message;
+        button.setAttribute("aria-label", error.message);
+      }
+    });
+
+    $("#favoriteTracks").addEventListener("click", async (event) => {
+      const button = event.target.closest(".requeue-favorite, .remove-favorite");
+      if (!button) return;
+      const item = pagedLists.favorites.items.find((candidate) => candidate.video_id === button.dataset.videoId);
+      if (!item) return;
+      button.disabled = true;
+      try {
+        if (button.classList.contains("remove-favorite")) {
+          await api("/api/favorites/toggle", {
+            method: "POST",
+            body: JSON.stringify({ video_id: item.video_id }),
+          });
+          resetPagedList("favorites");
+          await loadPagedList("favorites");
+        } else if (isLiveRadio(item)) {
+          await api("/api/radio/queue", {
+            method: "POST",
+            body: JSON.stringify({ station_uuid: item.station_uuid, client_id: clientId, device_name: deviceName }),
+          });
+        } else if (isPodcast(item)) {
+          await api("/api/podcast/queue", {
+            method: "POST",
+            body: JSON.stringify({ ...item, episode_id: item.video_id, client_id: clientId, device_name: deviceName }),
+          });
+        } else {
+          await api("/api/queue", {
+            method: "POST",
+            body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
+          });
+        }
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.title = error.message;
+        setSyncStatus(error.message, "warn");
       }
     });
 
@@ -1038,6 +2215,8 @@
         return;
       }
 
+      ensureAudioGraph();
+
       if (liveRadio) {
         player.playbackRate = 1;
         if (player.paused && player.readyState >= 2) {
@@ -1050,7 +2229,7 @@
             audioGate.classList.add("visible");
           }
         }
-        setSyncStatus("live · local relay through Self Station", "ok");
+        setSyncStatus("live · relayed locally", "ok");
         return;
       }
 
@@ -1130,6 +2309,7 @@
     audioGate.addEventListener("click", async () => {
       audioEnabled = true;
       localStorage.setItem("selfStationAudioEnabled", "1");
+      await resumeAudioGraph();
       if (lastState && lastState.current && player.readyState >= 1) {
         if (!isLiveRadio(lastState.current)) player.currentTime = targetPosition();
         try { await player.play(); } catch { /* polling keeps the button visible */ }
@@ -1137,12 +2317,32 @@
       syncAudio();
     });
 
-    $("#volume").value = localStorage.getItem("selfStationVolume") || localStorage.getItem("jukeboxVolume") || "80";
-    player.volume = Number($("#volume").value) / 100;
-    $("#volume").addEventListener("input", (event) => {
+    const volumeControl = $("#volume");
+    const volumeValue = $("#volumeValue");
+    const volumeRangeWrap = $("#volumeRangeWrap");
+    let volumeTooltipTimer;
+    const updateVolumeSlider = (value) => {
+      volumeRangeWrap.style.setProperty("--volume-ratio", Number(value) / 100);
+      volumeRangeWrap.style.setProperty("--volume-progress", `${value}%`);
+    };
+    const showVolumeValue = () => {
+      volumeValue.classList.add("is-visible");
+      clearTimeout(volumeTooltipTimer);
+      volumeTooltipTimer = setTimeout(() => volumeValue.classList.remove("is-visible"), 1800);
+    };
+    volumeControl.value = localStorage.getItem("selfStationVolume") || localStorage.getItem("jukeboxVolume") || "80";
+    volumeValue.value = `${volumeControl.value}%`;
+    updateVolumeSlider(volumeControl.value);
+    player.volume = Number(volumeControl.value) / 100;
+    volumeControl.addEventListener("input", (event) => {
       player.volume = Number(event.target.value) / 100;
       localStorage.setItem("selfStationVolume", event.target.value);
+      volumeValue.value = `${event.target.value}%`;
+      updateVolumeSlider(event.target.value);
+      showVolumeValue();
     });
+    volumeControl.addEventListener("pointerdown", showVolumeValue);
+    volumeControl.addEventListener("keydown", showVolumeValue);
 
     async function sendControl(action) {
       try {
@@ -1155,6 +2355,21 @@
 
     $("#playPauseButton").addEventListener("click", () => sendControl(lastState && lastState.status === "playing" ? "pause" : "play"));
     $("#skipButton").addEventListener("click", () => sendControl("skip"));
+    $("#requeueCurrentButton").addEventListener("click", async () => {
+      const current = lastState && lastState.current;
+      const button = $("#requeueCurrentButton");
+      if (!current || !isMusic(current) || !current.video_id || button.disabled) return;
+      button.disabled = true;
+      try {
+        await api("/api/queue", { method: "POST", body: JSON.stringify({ video_id: current.video_id, title: current.title, uploader: current.uploader, duration: current.duration, view_count: current.view_count, client_id: clientId, device_name: deviceName }) });
+        button.disabled = false;
+        showToast("Added current track to queue");
+        await fetchState();
+      } catch (error) {
+        showToast(error.message || "Could not add track to queue");
+        button.disabled = false;
+      }
+    });
     $("#autoRadioToggle").addEventListener("click", async () => {
       const button = $("#autoRadioToggle");
       const enabled = !(lastState && lastState.auto_radio);
@@ -1188,9 +2403,9 @@
     function renderPlaylistPreview(data) {
       playlistPreviewData = data;
       const preview = $("#playlistPreview");
-      const visibleTracks = (data.tracks || []).slice(0, 8);
-      const remaining = Math.max(0, Number(data.count || 0) - visibleTracks.length);
+      const visibleTracks = data.tracks || [];
       preview.innerHTML = `
+        <div class="black-playlist-preview-header">
         <div class="playlist-summary">
           ${data.cover ? `<img class="playlist-cover" src="${escapeHtml(data.cover)}" alt="">` : '<div class="playlist-cover"></div>'}
           <div>
@@ -1206,30 +2421,62 @@
             ${ICONS.playlist}<span>Add to queue</span>
           </button>
         </div>
-        <div class="playlist-track-list">
-          ${visibleTracks.map((track) => `
-            <div class="playlist-track">
+        </div>
+        <div class="black-card-list">
+          ${visibleTracks.map((track, index) => `
+            <article class="result">
+              <img src="${escapeHtml(track.thumbnail || data.cover || DEFAULT_ARTWORK)}" alt="" loading="lazy">
               <div>
                 <div class="item-title">${escapeHtml(track.title)}</div>
-                <div class="item-meta">${escapeHtml(track.uploader || (data.source === "spotify" ? "Spotify" : "YouTube"))}</div>
+                <div class="item-meta">${escapeHtml(track.uploader || (data.source === "spotify" ? "Spotify" : "YouTube"))} · ${formatDuration(track.duration)}</div>
               </div>
-              <span class="item-meta">${formatDuration(track.duration)}</span>
-            </div>
+              <button class="btn compact icon playlist-play-button" type="button" data-playlist-track="${index}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
+            </article>
           `).join("")}
-          ${remaining ? `<div class="item-meta">+ ${remaining} track${remaining === 1 ? "" : "s"}</div>` : ""}
         </div>
         <div id="playlistImportStatus" class="sync-line"></div>
       `;
       preview.hidden = false;
+      bindImageFallbacks("#playlistPreview img");
       $("#importPlaylistButton").addEventListener("click", importPlaylist);
+      preview.querySelectorAll("[data-playlist-track]").forEach((button) => {
+        button.addEventListener("click", () => playPlaylistTrack(Number(button.dataset.playlistTrack), button));
+      });
     }
 
-    async function loadPlaylistPreview(url) {
+    async function playPlaylistTrack(index, button) {
+      if (!playlistPreviewData || !playlistPreviewData.tracks[index]) return;
+      const track = playlistPreviewData.tracks[index];
+      button.disabled = true;
+      button.setAttribute("aria-label", "Adding to queue…");
+      button.setAttribute("title", "Adding to queue…");
+      try {
+        await api("/api/playlist/track", { method: "POST", body: JSON.stringify({ source: playlistPreviewData.source, track, client_id: clientId, device_name: deviceName }) });
+        button.setAttribute("aria-label", "Added to queue");
+        button.setAttribute("title", "Added to queue");
+        button.disabled = false;
+        showToast(`Added: ${track.title}`);
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.setAttribute("aria-label", "Add to queue");
+        button.setAttribute("title", "Add to queue");
+        showToast(error.message || "Could not add track");
+      }
+    }
+
+    async function loadPlaylistPreview(url, requestId) {
       clearTimeout(playlistPollTimer);
       playlistPreviewData = null;
+      document.body.classList.add("playlist-open");
+      $("#results").hidden = true;
+      $("#searchSentinel").hidden = true;
+      $("#radioResults").hidden = true;
+      $("#podcastResults").hidden = true;
       $("#playlistPreview").hidden = true;
       $("#searchStatus").textContent = "Reading playlist…";
       const data = await api(`/api/playlist/preview?url=${encodeURIComponent(url)}`);
+      if (requestId !== undefined && requestId !== searchRequestId) return;
       renderPlaylistPreview(data);
       $("#searchStatus").textContent = "Review the playlist and choose how many tracks to add.";
     }
@@ -1290,51 +2537,94 @@
       event.preventDefault();
       const query = $("#searchInput").value.trim();
       if (query.length < 2) return;
+      const requestId = ++searchRequestId;
       const radioMode = searchMode === "radio";
+      const podcastMode = searchMode === "podcast";
+      const playlistMode = !radioMode && !podcastMode && looksLikePlaylistUrl(query);
+      document.body.classList.toggle("playlist-open", playlistMode);
       $("#searchButton").disabled = true;
-      $("#searchStatus").textContent = radioMode ? "Searching stations…" : looksLikePlaylistUrl(query)
+      renderMusicRecommendations();
+      $("#searchStatus").textContent = radioMode ? "Searching stations…" : podcastMode ? "Searching podcasts…" : playlistMode
         ? "Reading playlist…"
         : "Searching… the first query may take a few seconds.";
+      $("#searchSentinel").hidden = radioMode || podcastMode || playlistMode;
+      $("#results").hidden = radioMode || podcastMode || playlistMode;
+      if (!radioMode && !podcastMode && !playlistMode) resetPagedList("search", { query });
       $("#results").innerHTML = "";
       $("#radioResults").innerHTML = "";
+      $("#podcastResults").innerHTML = "";
       $("#playlistPreview").hidden = true;
       try {
         if (radioMode) {
+          // Radio Browser is currently consumed as a bounded catalog response.
           const data = await api(`/api/radio/search?q=${encodeURIComponent(query)}`);
+          if (requestId !== searchRequestId) return;
           const radioResults = data.results || [];
           renderRadioResults(radioResults);
           $("#searchStatus").textContent = radioResults.length
-            ? `${radioResults.length} station${radioResults.length === 1 ? "" : "s"} found.`
+            ? `${radioResults.length} station${radioResults.length === 1 ? "" : "s"} found. Fixed catalog result.`
             : "No stations found.";
-        } else if (looksLikePlaylistUrl(query)) {
-          await loadPlaylistPreview(query);
+        } else if (podcastMode) {
+          // iTunes podcast search has no offset contract in this service yet.
+          const data = await api(`/api/podcast/search?q=${encodeURIComponent(query)}`);
+          if (requestId !== searchRequestId) return;
+          const podcastResults = data.results || [];
+          renderPodcastResults(podcastResults);
+          $("#searchStatus").textContent = podcastResults.length
+            ? `${podcastResults.length} podcast${podcastResults.length === 1 ? "" : "s"} found. Fixed catalog result.`
+            : "No podcasts found.";
+        } else if (playlistMode) {
+          await loadPlaylistPreview(query, requestId);
         } else {
           playlistPreviewData = null;
-          const data = await api(`/api/search?q=${encodeURIComponent(query)}`);
-          renderResults(data.results || []);
-          $("#searchStatus").textContent = data.results.length ? `${data.results.length} results` : "No results found.";
+          await loadPagedList("search");
+          if (requestId !== searchRequestId) return;
+          const resultCount = pagedLists.search.items.length;
+          $("#searchStatus").textContent = resultCount ? `${resultCount} results` : "No results found.";
         }
       } catch (error) {
-        $("#searchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+        if (requestId === searchRequestId) {
+          $("#searchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+        }
       } finally {
-        $("#searchButton").disabled = false;
+        if (requestId === searchRequestId) {
+          $("#searchButton").disabled = false;
+          renderMusicRecommendations();
+        }
       }
     });
 
-    function renderResults(results) {
-      $("#results").innerHTML = results.map((item, index) => `
+    $("#searchInput").addEventListener("input", () => {
+      if (searchMode !== "music" || $("#searchInput").value.trim()) return;
+      searchRequestId += 1;
+      playlistPreviewData = null;
+      document.body.classList.remove("playlist-open");
+      $("#playlistPreview").hidden = true;
+      $("#searchStatus").textContent = "";
+      $("#searchButton").disabled = false;
+      $("#results").hidden = false;
+      $("#searchSentinel").hidden = true;
+      resetPagedList("search");
+      renderMusicRecommendations();
+    });
+
+    function renderResults() {
+      const results = pagedLists.search.items;
+      $("#results").innerHTML = results.length ? results.map((item) => `
         <article class="result">
-          <img src="${escapeHtml(item.thumbnail)}" alt="" loading="lazy">
+          <img src="${escapeHtml(artworkUrl(item))}" alt="" loading="lazy">
           <div>
             <div class="item-title">${escapeHtml(item.title)}</div>
             <div class="item-meta">${escapeHtml(item.uploader || "YouTube")} · ${formatDuration(item.duration)} · ${formatViews(item.view_count)}</div>
           </div>
-          <button class="btn compact icon add-result" type="button" data-index="${index}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
+          <button class="btn compact icon add-result" type="button" data-video-id="${escapeHtml(item.video_id)}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
         </article>
-      `).join("");
+      `).join("") : `${pagedLists.search.query && pagedLists.search.initialized ? `<div class="empty list-empty-message">No results found.</div>` : ""}${pagedLists.search.query && !pagedLists.search.initialized ? fadedListCards("result", 3) : ""}`;
+      bindImageFallbacks("#results img");
       document.querySelectorAll(".add-result").forEach((button) => {
         button.addEventListener("click", async () => {
-          const item = results[Number(button.dataset.index)];
+          const item = results.find((candidate) => candidate.video_id === button.dataset.videoId);
+          if (!item) return;
           button.disabled = true;
           button.title = "Adding";
           try {
@@ -1342,10 +2632,11 @@
               method: "POST",
               body: JSON.stringify({ ...item, client_id: clientId, device_name: deviceName }),
             });
-            button.innerHTML = ICONS.check;
-            button.title = "Added";
-            button.setAttribute("aria-label", "Added");
-            await fetchState();
+        button.innerHTML = ICONS.check;
+        button.title = "Added";
+        button.setAttribute("aria-label", "Added");
+        button.disabled = false;
+        await fetchState();
           } catch (error) {
             button.disabled = false;
             button.innerHTML = ICONS.retry;
@@ -1356,14 +2647,217 @@
       });
     }
 
+    function updateMusicRecommendations(current) {
+      const nextKey = current && isMusic(current) && /^[A-Za-z0-9_-]{11}$/.test(String(current.video_id || ""))
+        ? `${current.id}:${current.video_id}`
+        : "";
+      if (nextKey === recommendationTrackKey) {
+        syncMusicRecommendationVisibility();
+        return;
+      }
+      recommendationTrackKey = nextKey;
+      const requestId = ++recommendationRequestId;
+      recommendationItems = [];
+      recommendationMessage = nextKey ? "Loading recommendations…" : "";
+      renderMusicRecommendations();
+      if (!nextKey) return;
+      loadMusicRecommendations(nextKey, requestId, 0);
+    }
+
+    async function loadMusicRecommendations(trackKey, requestId, attempt) {
+      if (requestId !== recommendationRequestId || trackKey !== recommendationTrackKey) return;
+      try {
+        const data = await api("/api/recommendations?limit=10");
+        if (requestId !== recommendationRequestId || trackKey !== recommendationTrackKey) return;
+        const current = lastState && lastState.current;
+        if (
+          !current
+          || `${current.id}:${current.video_id}` !== trackKey
+          || Number(data.source_queue_id) !== Number(current.id)
+          || data.source_video_id !== current.video_id
+        ) {
+          recommendationMessage = "Refreshing recommendations…";
+          renderMusicRecommendations();
+          return;
+        }
+        recommendationItems = Array.isArray(data.results) ? data.results : [];
+        recommendationMessage = recommendationItems.length ? "" : "No related tracks found for this track.";
+        renderMusicRecommendations();
+      } catch (error) {
+        if (requestId !== recommendationRequestId || trackKey !== recommendationTrackKey) return;
+        if (attempt === 0 && /ocupad|try again|429/i.test(error.message || "")) {
+          recommendationMessage = "Retrying recommendations…";
+          renderMusicRecommendations();
+          setTimeout(() => loadMusicRecommendations(trackKey, requestId, 1), 3000);
+          return;
+        }
+        recommendationMessage = "Recommendations are temporarily unavailable.";
+        renderMusicRecommendations();
+      }
+    }
+
+    function syncMusicRecommendationVisibility() {
+      const eligible = searchMode === "music"
+        && !document.body.classList.contains("playlist-open")
+        && !playlistPreviewData
+        && pagedLists.search.items.length === 0
+        && !$("#searchButton").disabled
+        && Boolean(recommendationTrackKey);
+      $("#musicRecommendations").hidden = !eligible;
+    }
+
+    function renderMusicRecommendations() {
+      const section = $("#musicRecommendations");
+      if (!section) return;
+      const current = lastState && lastState.current;
+      $("#recommendationSeedLabel").textContent = current && `${current.id}:${current.video_id}` === recommendationTrackKey
+        ? current.title || ""
+        : "";
+      $("#recommendationStatus").textContent = recommendationMessage;
+      $("#recommendationStatus").hidden = !recommendationMessage;
+      $("#recommendationResults").innerHTML = recommendationItems.length ? recommendationItems.map((item) => `
+        <article class="result recommendation-result">
+          <img src="https://i.ytimg.com/vi/${encodeURIComponent(item.video_id)}/mqdefault.jpg" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.uploader || "YouTube")} · ${formatDuration(item.duration)}${item.view_count === null || item.view_count === undefined ? "" : ` · ${formatViews(item.view_count)}`}</div>
+          </div>
+          <button class="btn compact icon add-recommendation" type="button" data-video-id="${escapeHtml(item.video_id)}" aria-label="Add to queue" title="Add to queue">${ICONS.add}</button>
+        </article>
+      `).join("") : "";
+      document.querySelectorAll(".recommendation-result img").forEach((image) => {
+        image.addEventListener("error", () => { image.src = DEFAULT_ARTWORK; }, { once: true });
+      });
+      syncMusicRecommendationVisibility();
+    }
+
+    $("#recommendationResults").addEventListener("click", async (event) => {
+      const button = event.target.closest(".add-recommendation");
+      if (!button || button.disabled) return;
+      const item = recommendationItems.find((candidate) => candidate.video_id === button.dataset.videoId);
+      if (!item) return;
+      button.disabled = true;
+      button.title = "Adding";
+      try {
+        await api("/api/queue", {
+          method: "POST",
+          body: JSON.stringify({
+            video_id: item.video_id,
+            title: item.title,
+            uploader: item.uploader,
+            duration: item.duration,
+            view_count: item.view_count,
+            client_id: clientId,
+            device_name: deviceName,
+          }),
+        });
+        button.innerHTML = ICONS.check;
+        button.title = "Added";
+        button.setAttribute("aria-label", "Added");
+        button.disabled = false;
+        await fetchState();
+      } catch (error) {
+        button.disabled = false;
+        button.innerHTML = ICONS.retry;
+        button.title = error.message || "Try again";
+        button.setAttribute("aria-label", button.title);
+      }
+    });
+
+    function renderPodcastResults(results) {
+      $("#podcastResults").innerHTML = results.length ? results.map((item, index) => `
+        <article class="result podcast-result">
+          <img src="${escapeHtml(item.thumbnail || DEFAULT_ARTWORK)}" alt="" loading="lazy">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.uploader || "Podcast")}${item.episode_count ? ` · ${item.episode_count} episodes` : ""}</div>
+            <div class="item-meta">${escapeHtml([item.genre, item.country].filter(Boolean).join(" · "))}</div>
+          </div>
+          <button class="btn compact icon open-podcast" type="button" data-index="${index}" aria-label="View episodes" title="View episodes">${ICONS.chevron}</button>
+        </article>
+      `).join("") : `<div class="empty list-empty-message">No podcasts found.</div>${fadedListCards("result", 3)}`;
+      document.querySelectorAll(".podcast-result img").forEach((image) => {
+        image.addEventListener("error", () => { image.src = DEFAULT_ARTWORK; }, { once: true });
+      });
+      document.querySelectorAll(".open-podcast").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const podcast = results[Number(button.dataset.index)];
+          button.disabled = true;
+          $("#searchStatus").textContent = "Reading podcast episodes…";
+          try {
+            const data = await api(`/api/podcast/episodes?id=${encodeURIComponent(podcast.podcast_id)}`);
+            renderPodcastEpisodes(data);
+            $("#searchStatus").textContent = data.episodes.length
+              ? `${data.episodes.length} episodes available.`
+              : "No playable episodes found.";
+          } catch (error) {
+            button.disabled = false;
+            $("#searchStatus").innerHTML = `<span class="error">${escapeHtml(error.message)}</span>`;
+          }
+        });
+      });
+    }
+
+    function renderPodcastEpisodes(data) {
+      const episodes = data.episodes || [];
+      $("#podcastResults").innerHTML = `
+        <div class="podcast-heading">
+          <button class="btn compact podcast-back" type="button">← Podcasts</button>
+          <div>
+            <div class="item-title">${escapeHtml(data.title)}</div>
+            <div class="item-meta">${escapeHtml(data.uploader || "Podcast")} · ${episodes.length} episodes</div>
+          </div>
+        </div>
+        ${episodes.length ? episodes.map((item, index) => `
+          <article class="result podcast-episode">
+            <img src="${escapeHtml(item.thumbnail || DEFAULT_ARTWORK)}" alt="" loading="lazy">
+            <div>
+              <div class="item-title">${escapeHtml(item.title)}</div>
+              <div class="item-meta">${formatDuration(item.duration)}${item.published_at ? ` · ${escapeHtml(item.published_at)}` : ""}</div>
+            </div>
+            <button class="btn compact icon add-podcast-result" type="button" data-index="${index}" aria-label="Add episode to queue" title="Add episode to queue">${ICONS.add}</button>
+          </article>
+        `).join("") : `<div class="empty list-empty-message">No playable episodes found.</div>${fadedListCards("result", 3)}`}
+      `;
+      document.querySelectorAll(".podcast-result img, .podcast-episode img").forEach((image) => {
+        image.addEventListener("error", () => { image.src = DEFAULT_ARTWORK; }, { once: true });
+      });
+      $(".podcast-back").addEventListener("click", () => {
+        $("#searchForm").requestSubmit();
+      });
+      document.querySelectorAll(".add-podcast-result").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const episode = episodes[Number(button.dataset.index)];
+          button.disabled = true;
+          button.title = "Adding";
+          try {
+            await api("/api/podcast/queue", {
+              method: "POST",
+              body: JSON.stringify({ ...episode, client_id: clientId, device_name: deviceName }),
+            });
+            button.innerHTML = ICONS.check;
+            button.title = "Added";
+            button.setAttribute("aria-label", "Added");
+            button.disabled = false;
+            await fetchState();
+          } catch (error) {
+            button.disabled = false;
+            button.innerHTML = ICONS.retry;
+            button.title = error.message;
+            button.setAttribute("aria-label", error.message);
+          }
+        });
+      });
+    }
+
     function renderRadioResults(results) {
-      $("#radioResults").innerHTML = results.map((station, index) => {
+      $("#radioResults").innerHTML = results.length ? results.map((station, index) => {
         const location = [station.state, station.country].filter(Boolean).join(" / ");
         const technical = [station.codec, station.bitrate ? `${station.bitrate} kbps` : "", station.language].filter(Boolean).join(" · ");
         const tags = String(station.tags || "").split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 4).join(" · ");
         return `
           <article class="result">
-            <img class="radio-result-logo" src="${escapeHtml(station.favicon || RADIO_PLACEHOLDER)}" alt="" loading="lazy">
+            <img class="radio-result-logo" src="${escapeHtml(station.favicon || DEFAULT_ARTWORK)}" alt="" loading="lazy">
             <div>
               <div class="item-title">${escapeHtml(station.name)}</div>
             <div class="item-meta radio-live-label">LIVE${location ? ` · ${escapeHtml(location)}` : ""}</div>
@@ -1373,9 +2867,9 @@
             <button class="btn compact icon add-radio-result" type="button" data-index="${index}" aria-label="Add radio to queue" title="Add radio to queue">${ICONS.add}</button>
           </article>
         `;
-      }).join("");
+      }).join("") : `<div class="empty list-empty-message">No radio stations found.</div>${fadedListCards("result", 3)}`;
       document.querySelectorAll(".radio-result-logo").forEach((image) => {
-        image.addEventListener("error", () => { image.src = RADIO_PLACEHOLDER; }, { once: true });
+        image.addEventListener("error", () => { image.src = DEFAULT_ARTWORK; }, { once: true });
       });
       document.querySelectorAll(".add-radio-result").forEach((button) => {
         button.addEventListener("click", async () => {
@@ -1394,6 +2888,7 @@
             button.innerHTML = ICONS.check;
             button.title = "Added";
             button.setAttribute("aria-label", "Added");
+            button.disabled = false;
             $("#searchStatus").textContent = `${station.name} was added to the queue.`;
             await fetchState();
           } catch (error) {
@@ -1428,14 +2923,28 @@
       }
     });
 
+    // Keep the button glow anchored to the cursor without a continuous animation.
+    document.addEventListener("pointermove", (event) => {
+      const target = event.target.closest?.("button, .tab-button, .flow-tab, .search-mode-button, .btn, .device-button");
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      target.style.setProperty("--pointer-x", `${((event.clientX - rect.left) / rect.width) * 100}%`);
+      target.style.setProperty("--pointer-y", `${((event.clientY - rect.top) / rect.height) * 100}%`);
+    }, { passive: true });
+
     updateDeviceLabel();
     selectView();
-    setSearchMode(location.hash === "#radios" || localStorage.getItem("selfStationView") === "radios" ? "radio" : "music");
-    if (!deviceName) openDeviceDialog(true);
+    setSearchMode(location.hash === "#radios" || localStorage.getItem("selfStationView") === "radios"
+      ? "radio"
+      : location.hash === "#podcasts" ? "podcast" : "music");
+    renderFixedDiscoverPlaylists();
+    setFlowTab(localStorage.getItem("selfStationFlowTab") || "add");
+    if (!deviceName) openDevicePane(true);
     fetchState();
     stateTimer = setInterval(fetchState, 750);
     syncTimer = setInterval(() => { updateProgress(); syncAudio(); }, 500);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) fetchState(); });
   </script>
-</body>
+<script src="/in-the-black/black.js?v=self-station"></script></body>
 </html>
